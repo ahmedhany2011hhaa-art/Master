@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Master X | Plinko</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #000; color: white; font-family: 'Cairo', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .stage { height: 45vh; background: #050505; position: relative; border: 1px solid #333; overflow: hidden; }
+        .peg { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .ball { position: absolute; width: 16px; height: 16px; background: red; border-radius: 50%; transition: all 1s ease-in-out; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="flex justify-between items-center mb-4 p-3 glass rounded-xl">
+        <a href="./index.html" class="text-red-500 font-bold">🔙 عودة</a>
+        <span id="balance" class="font-bold text-lg">0</span> 🪙
+    </div>
+
+    <div class="stage rounded-2xl mb-4" id="stage">
+        <script>
+            const stage = document.getElementById('stage');
+            for (let i = 0; i < 7; i++) {
+                for (let j = 0; j < i + 3; j++) {
+                    const peg = document.createElement('div');
+                    peg.className = 'peg';
+                    peg.style.top = (i * 45 + 50) + 'px';
+                    peg.style.left = (j * 35 + 80) + 'px';
+                    stage.appendChild(peg);
+                }
+            }
+        </script>
+        <div id="ball" class="ball" style="top:-20px; left:50%;"></div>
+    </div>
+
+    <div class="glass p-4 rounded-xl text-center">
+        <input type="number" id="bet-amount" placeholder="المبلغ" class="w-full bg-black border border-white/10 p-3 rounded-lg text-center mb-3 text-white">
+        <button onclick="showAdAndDrop()" class="w-full bg-red-600 p-4 rounded-xl font-black">إسقاط الكرة 🔴</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+        
+        let currentUserPhone = localStorage.getItem('zeykor_phone') || "anonymous";
+
+        onValue(ref(db, 'ZEYKOR/users/' + currentUserPhone), (snap) => {
+            document.getElementById('balance').innerText = snap.val()?.balance || 0;
+        });
+
+        // 1. دالة الإعلان
+        window.showAdAndDrop = () => {
+            let bet = parseInt(document.getElementById('bet-amount').value);
+            if(isNaN(bet) || bet <= 0) return alert("حدد مبلغ صحيح!");
+            
+            alert("جاري تحميل الإعلان... سيتم خصم النقاط بعد انتهاء الإعلان");
+            
+            setTimeout(() => {
+                // بعد الإعلان
+                dropBall(bet);
+            }, 3000); // محاكاة إعلان
+        };
+
+        // 2. دالة إسقاط الكرة
+        window.dropBall = (bet) => {
+            get(ref(db, 'ZEYKOR/users/' + currentUserPhone)).then(snap => {
+                let balance = snap.val()?.balance || 0;
+                if(bet > balance) return alert("لا يوجد رصيد كافي!");
+                
+                update(ref(db, 'ZEYKOR/users/' + currentUserPhone), { balance: balance - bet });
+
+                const ball = document.getElementById('ball');
+                ball.style.top = "70%";
+                ball.style.left = (Math.random() * 60 + 20) + "%";
+                
+                setTimeout(() => {
+                    let multipliers = [0, 0.5, 1.5, 2, 0.2, 5];
+                    let m = multipliers[Math.floor(Math.random() * multipliers.length)];
+                    let profit = bet * m;
+                    
+                    get(ref(db, 'ZEYKOR/users/' + currentUserPhone)).then(snap => {
+                        let balance = snap.val()?.balance || 0;
+                        update(ref(db, 'ZEYKOR/users/' + currentUserPhone), { balance: Math.floor(balance + profit) });
+                        alert("النتيجة: " + m + "x - ربح: " + Math.floor(profit) + " 🪙");
+                        
+                        ball.style.top = "-20px";
+                        ball.style.left = "50%";
+                    });
+                }, 1000);
+            });
+        };
+    </script>
+</body>
+</html>

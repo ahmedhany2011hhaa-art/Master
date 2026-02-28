@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Master X | Crash</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #000; color: white; font-family: 'Cairo', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .stage { height: 40vh; background: #050505; border: 1px solid #333; position: relative; overflow: hidden; }
+        .plane { font-size: 30px; position: absolute; bottom: 0; left: 0; transition: all 0.1s linear; }
+    </style>
+</head>
+<body class="p-4">
+    <div class="flex justify-between items-center mb-4 p-3 glass rounded-xl">
+        <a href="./index.html" class="text-red-500 font-bold">🔙 عودة</a>
+        <span id="balance" class="font-bold text-lg">0</span> 🪙
+    </div>
+
+    <div class="stage rounded-2xl mb-4 flex items-center justify-center">
+        <div id="plane" class="plane">✈️</div>
+        <div id="counter" class="text-5xl font-black">1.00x</div>
+    </div>
+
+    <div class="glass p-4 rounded-xl text-center">
+        <input type="number" id="bet-amount" placeholder="المبلغ" class="w-full bg-black border border-white/10 p-3 rounded-lg text-center mb-3 text-white">
+        <button id="play-btn" onclick="showAdAndPlay()" class="w-full bg-red-600 p-4 rounded-xl font-black">بدء الرهان 🚀</button>
+        <button id="cashout-btn" onclick="cashOut()" class="w-full bg-green-600 p-4 rounded-xl font-black hidden">كاش أوت! 💰</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+        
+        let currentUserPhone = localStorage.getItem('zeykor_phone') || "anonymous";
+        let currentMultiplier = 1.0;
+        let isPlaying = false;
+        let interval;
+
+        onValue(ref(db, 'ZEYKOR/users/' + currentUserPhone), (snap) => {
+            document.getElementById('balance').innerText = snap.val()?.balance || 0;
+        });
+
+        // 1. دالة إظهار الإعلان (قم بتحديث الرابط برابط إعلانك)
+        window.showAdAndPlay = () => {
+            let bet = parseInt(document.getElementById('bet-amount').value);
+            if(isNaN(bet) || bet <= 0) return alert("حدد مبلغ صحيح!");
+            
+            alert("جاري تحميل الإعلان... سيتم خصم النقاط بعد انتهاء الإعلان");
+            
+            // محاكاة إعلان (قم بتغيير هذا لشركة الإعلانات الخاصة بك)
+            setTimeout(() => {
+                // بعد انتهاء الإعلان، يتم بدء اللعبة
+                startCrash(bet);
+            }, 3000); // إعلان مدته 3 ثواني للمحاكاة
+        };
+
+        // 2. دالة بدء اللعبة الفعلية (تستدعى بعد الإعلان)
+        window.startCrash = (bet) => {
+            get(ref(db, 'ZEYKOR/users/' + currentUserPhone)).then(snap => {
+                let balance = snap.val()?.balance || 0;
+                if(bet > balance) return alert("لا يوجد رصيد كافي!");
+                
+                update(ref(db, 'ZEYKOR/users/' + currentUserPhone), { balance: balance - bet });
+                
+                isPlaying = true;
+                currentMultiplier = 1.0;
+                let crashPoint = (Math.random() * 3) + 1.2;
+                
+                document.getElementById('play-btn').classList.add('hidden');
+                document.getElementById('cashout-btn').classList.remove('hidden');
+
+                interval = setInterval(() => {
+                    currentMultiplier += 0.01;
+                    document.getElementById('counter').innerText = currentMultiplier.toFixed(2) + "x";
+                    document.getElementById('plane').style.left = (currentMultiplier - 1) * 30 + "px";
+                    document.getElementById('plane').style.bottom = (currentMultiplier - 1) * 10 + "px";
+
+                    if (currentMultiplier >= crashPoint) {
+                        clearInterval(interval);
+                        document.getElementById('counter').innerText = "💥 انفجرت!";
+                        isPlaying = false;
+                        resetGame();
+                    }
+                }, 50);
+            });
+        };
+
+        window.cashOut = () => {
+            if(!isPlaying) return;
+            clearInterval(interval);
+            let bet = parseInt(document.getElementById('bet-amount').value);
+            let profit = bet * currentMultiplier;
+            
+            get(ref(db, 'ZEYKOR/users/' + currentUserPhone)).then(snap => {
+                let balance = snap.val()?.balance || 0;
+                update(ref(db, 'ZEYKOR/users/' + currentUserPhone), { balance: Math.floor(balance + profit) });
+                document.getElementById('counter').innerText = "فوز: " + Math.floor(profit) + " 🪙";
+                isPlaying = false;
+                resetGame();
+            });
+        };
+
+        function resetGame() {
+            document.getElementById('play-btn').classList.remove('hidden');
+            document.getElementById('cashout-btn').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('counter').innerText = "1.00x";
+                document.getElementById('plane').style.left = "0px";
+                document.getElementById('plane').style.bottom = "0px";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
