@@ -8,28 +8,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { background: #050505; color: white; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glow-red { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.06); }
+        .glow-red { box-shadow: 0 0 15px rgba(220, 38, 38, 0.15); }
+        .ad-box { background: rgba(0, 0, 0, 0.5); border: 1px dashed rgba(255, 255, 255, 0.1); }
         .hack-card { transition: 0.3s; }
         .hack-card:active { transform: scale(0.97); }
     </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7995831182050548" crossorigin="anonymous"></script>
 </head>
-<body class="p-3 pb-20">
+<body class="p-3 pb-24">
 
-    <header class="glass p-4 rounded-2xl flex justify-between items-center mb-5 sticky top-2 z-40">
-        <h1 class="text-2xl font-black text-red-500 italic tracking-tighter">SUKUNA</h1>
+    <header class="glass p-4 rounded-3xl flex justify-between items-center mb-5 sticky top-2 z-40">
+        <h1 class="text-2xl font-black text-red-500 italic tracking-tighter">MASTER X</h1>
         <div class="glass px-4 py-2 rounded-full font-bold flex items-center gap-2 text-sm">
             <span id="u-balance" class="text-white">0</span> 🪙
         </div>
     </header>
 
-    <section class="glass p-5 rounded-3xl text-center mb-3 glow-red">
-        <p class="text-zinc-400 text-xs tracking-widest uppercase">رصيد الحساب</p>
-        <p class="text-5xl font-black text-white mb-3"><span id="u-balance-big">0</span> 🪙</p>
-        <button onclick="watchAd()" class="w-full bg-yellow-500 text-black p-3 rounded-xl font-bold text-sm">شاهد إعلان واكسب نقاط 🎁</button>
-    </section>
-
-    <section class="glass p-2 rounded-2xl mb-5 flex justify-center items-center">
+    <section class="ad-box p-1 rounded-2xl mb-5 flex justify-center items-center">
         <script type="text/javascript">
             atOptions = {
                 'key' : 'd5a96c0fea5c0cae8f6c7dee54b39841',
@@ -42,20 +38,48 @@
         <script type="text/javascript" src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
     </section>
 
+    <section class="glass p-6 rounded-3xl text-center mb-5 glow-red">
+        <p class="text-zinc-400 text-xs tracking-widest uppercase">رصيد الحساب</p>
+        <p class="text-5xl font-black text-white mb-5"><span id="u-balance-big">0</span> 🪙</p>
+        <button onclick="watchAd()" class="w-full bg-yellow-500 text-black p-4 rounded-2xl font-black text-sm">شاهد إعلان واكسب نقاط 🎁</button>
+    </section>
+
+    <section class="ad-box p-2 rounded-2xl mb-5 flex justify-center items-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-7995831182050548"
+             data-ad-slot="1739810548"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </section>
+
+    <h2 class="text-xl font-black mb-4 tracking-tight text-white">الألعاب 🎲</h2>
     <section class="grid grid-cols-2 gap-3 mb-6">
-        <a href="./plinko.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
-            <div class="text-5xl mb-2">🎰</div>
+        <a href="./plinko.html" class="glass p-5 rounded-3xl text-center flex flex-col items-center">
+            <div class="text-5xl mb-3">🎰</div>
             <p class="font-bold text-sm">بلينكو</p>
         </a>
-        <a href="./crash.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
-            <div class="text-5xl mb-2">✈️</div>
+        <a href="./crash.html" class="glass p-5 rounded-3xl text-center flex flex-col items-center">
+            <div class="text-5xl mb-3">✈️</div>
             <p class="font-bold text-sm">الطيارة</p>
         </a>
     </section>
 
-    <section>
-        <h2 class="text-xl font-black mb-4 tracking-tight">الأدوات المتاحة 🛠️</h2>
-        <div id="hacks-grid" class="grid grid-cols-2 gap-3"></div>
+    <h2 class="text-xl font-black mb-4 tracking-tight text-white">الأدوات المتاحة 🛠️</h2>
+    <section id="hacks-grid" class="grid grid-cols-2 gap-3 mb-5"></section>
+
+    <section class="ad-box p-2 rounded-2xl mb-5 flex justify-center items-center">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-format="autorelaxed"
+             data-ad-client="ca-pub-7995831182050548"
+             data-ad-slot="5487483861"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </section>
 
     <script type="module">
@@ -99,13 +123,13 @@
                 const h = child.val();
                 const hId = child.key;
                 grid.innerHTML += `
-                    <div class="glass p-4 rounded-2xl text-center hack-card flex flex-col justify-between">
+                    <div class="glass p-5 rounded-3xl text-center hack-card flex flex-col justify-between">
                         <div>
-                            <div class="text-3xl mb-2">🚀</div>
-                            <p class="font-bold text-xs text-white">${h.name}</p>
+                            <div class="text-4xl mb-3">🚀</div>
+                            <p class="font-bold text-sm text-white">${h.name}</p>
                         </div>
-                        <p class="text-red-400 font-black text-lg my-2">${h.price} 🪙</p>
-                        <button onclick="buyHack('${hId}', ${h.price}, '${h.fileUrl}')" class="bg-red-600 text-white w-full rounded-xl text-xs p-2.5 font-bold">شراء وتحميل</button>
+                        <p class="text-red-400 font-black text-xl my-3">${h.price} 🪙</p>
+                        <button onclick="buyHack('${hId}', ${h.price}, '${h.fileUrl}')" class="bg-red-600 text-white w-full rounded-xl text-sm p-3 font-bold">شراء وتحميل</button>
                     </div>
                 `;
             });
