@@ -12,42 +12,52 @@
         .glow-red { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
         .hack-card { transition: 0.3s; }
         .hack-card:active { transform: scale(0.97); }
+        input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px; border-radius: 12px; color: white; }
     </style>
 </head>
 <body class="p-3 pb-20">
 
-    <header class="glass p-4 rounded-2xl flex justify-between items-center mb-5 sticky top-2 z-50">
-        <h1 class="text-2xl font-black text-red-500 italic tracking-tighter">SUKUNA</h1>
-        <div class="glass px-4 py-2 rounded-full font-bold flex items-center gap-2 text-sm">
-            <span id="u-balance" class="text-white">0</span> 🪙
-        </div>
-    </header>
+    <div id="login-screen" class="fixed inset-0 bg-black z-50 flex flex-col justify-center p-6 text-center">
+        <h1 class="text-4xl font-black text-red-500 mb-8 italic">MASTER X</h1>
+        <input type="text" id="phone-input" placeholder="أدخل رقم هاتفك" class="w-full mb-4 text-center">
+        <input type="text" id="nick-input" placeholder="اسم المستخدم (اختياري)" class="w-full mb-6 text-center">
+        <button onclick="login()" class="w-full bg-red-600 p-4 rounded-xl font-bold text-white">دخول 🚀</button>
+    </div>
 
-    <section class="glass p-5 rounded-3xl text-center mb-5 glow-red">
-        <p class="text-zinc-400 text-xs tracking-widest uppercase">رصيد الحساب</p>
-        <p class="text-5xl font-black text-white mb-3"><span id="u-balance-big">0</span> 🪙</p>
-        <button onclick="requestWithdraw()" class="w-full bg-green-600 p-3 rounded-xl font-bold text-white text-sm">طلب سحب نقود 💰</button>
-    </section>
+    <div id="main-content" class="hidden">
+        <header class="glass p-4 rounded-2xl flex justify-between items-center mb-5 sticky top-2 z-40">
+            <h1 class="text-2xl font-black text-red-500 italic tracking-tighter">SUKUNA</h1>
+            <div class="glass px-4 py-2 rounded-full font-bold flex items-center gap-2 text-sm">
+                <span id="u-balance" class="text-white">0</span> 🪙
+            </div>
+        </header>
 
-    <section class="grid grid-cols-2 gap-3 mb-6">
-        <a href="./plinko.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
-            <div class="text-5xl mb-2">🎰</div>
-            <p class="font-bold text-sm">بلينكو</p>
-        </a>
-        <a href="./crash.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
-            <div class="text-5xl mb-2">✈️</div>
-            <p class="font-bold text-sm">الطيارة</p>
-        </a>
-    </section>
+        <section class="glass p-5 rounded-3xl text-center mb-5 glow-red">
+            <p class="text-zinc-400 text-xs tracking-widest uppercase">رصيد الحساب</p>
+            <p class="text-5xl font-black text-white mb-3"><span id="u-balance-big">0</span> 🪙</p>
+            <button onclick="requestWithdraw()" class="w-full bg-green-600 p-3 rounded-xl font-bold text-white text-sm">طلب سحب نقود 💰</button>
+        </section>
 
-    <section>
-        <h2 class="text-xl font-black mb-4 tracking-tight">الأدوات المتاحة 🛠️</h2>
-        <div id="hacks-grid" class="grid grid-cols-2 gap-3"></div>
-    </section>
+        <section class="grid grid-cols-2 gap-3 mb-6">
+            <a href="./plinko.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
+                <div class="text-5xl mb-2">🎰</div>
+                <p class="font-bold text-sm">بلينكو</p>
+            </a>
+            <a href="./crash.html" class="glass p-4 rounded-2xl text-center flex flex-col items-center">
+                <div class="text-5xl mb-2">✈️</div>
+                <p class="font-bold text-sm">الطيارة</p>
+            </a>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-black mb-4 tracking-tight">الأدوات المتاحة 🛠️</h2>
+            <div id="hacks-grid" class="grid grid-cols-2 gap-3"></div>
+        </section>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get, set } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
@@ -56,14 +66,45 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        let currentUserPhone = localStorage.getItem('zeykor_phone') || "anonymous";
+        let currentUserPhone = localStorage.getItem('zeykor_phone');
 
-        // تحديث الرصيد لحظياً
-        onValue(ref(db, 'ZEYKOR/users/' + currentUserPhone), (snap) => {
-            const balance = snap.exists() ? snap.val().balance : 0;
-            document.getElementById('u-balance').innerText = balance;
-            document.getElementById('u-balance-big').innerText = balance;
-        });
+        // التحقق من تسجيل الدخول عند فتح الصفحة
+        if (currentUserPhone) {
+            showMainContent();
+        }
+
+        window.login = () => {
+            const phone = document.getElementById('phone-input').value;
+            const nick = document.getElementById('nick-input').value || "مستخدم";
+            if (!phone) return alert("أدخل رقم الهاتف!");
+
+            localStorage.setItem('zeykor_phone', phone);
+            currentUserPhone = phone;
+
+            // تسجيل المستخدم في قاعدة البيانات إذا لم يكن موجوداً
+            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
+                if (!snap.exists()) {
+                    set(ref(db, 'ZEYKOR/users/' + phone), { balance: 0, nick: nick });
+                }
+                showMainContent();
+            });
+        };
+
+        function showMainContent() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            loadUserData();
+        }
+
+        function loadUserData() {
+            // تحديث الرصيد لحظياً
+            onValue(ref(db, 'ZEYKOR/users/' + currentUserPhone), (snap) => {
+                const data = snap.val();
+                const balance = data ? data.balance : 0;
+                document.getElementById('u-balance').innerText = balance;
+                document.getElementById('u-balance-big').innerText = balance;
+            });
+        }
 
         // جلب الأدوات وإظهارها
         onValue(ref(db, 'ZEYKOR/hacks'), (snap) => {
