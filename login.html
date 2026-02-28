@@ -2,26 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MASTER X | Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { background: #000; color: white; font-family: 'Cairo', sans-serif; }
-        input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; color: white; text-align: center; }
-        input:focus { outline: none; border-color: #dc2626; }
-    </style>
+    <style>body{background:#000;color:white;font-family:sans-serif;}</style>
 </head>
 <body class="flex flex-col justify-center items-center h-screen p-4">
-    <div class="text-center w-full max-w-sm">
-        <h1 class="text-5xl font-black text-red-500 mb-10 italic tracking-tighter">MASTER X</h1>
-        
-        <input type="text" id="phone" placeholder="رقم الهاتف">
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <input type="text" id="nick" placeholder="اسم المستخدم (للحساب الجديد)">
-
-        <button onclick="auth()" class="w-full bg-red-600 p-4 rounded-xl font-black text-lg">دخول / إنشاء حساب 🚀</button>
-    </div>
+    <h1 class="text-4xl font-black text-red-500 mb-10">MASTER X</h1>
+    <input type="text" id="phone" placeholder="رقم الهاتف" class="w-full p-4 mb-3 bg-zinc-900 rounded-xl">
+    <input type="password" id="pass" placeholder="كلمة المرور" class="w-full p-4 mb-6 bg-zinc-900 rounded-xl">
+    <button onclick="auth()" class="w-full bg-red-600 p-4 rounded-xl font-bold">دخول 🚀</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
@@ -35,15 +25,11 @@
         window.auth = () => {
             const phone = document.getElementById('phone').value;
             const pass = document.getElementById('pass').value;
-            const nick = document.getElementById('nick').value || "مستخدم";
+            if(!phone || !pass) return alert("املأ البيانات!");
             
-            if(!phone || !pass) return alert("أدخل الهاتف وكلمة المرور!");
-            
-            const userRef = ref(db, 'ZEYKOR/users/' + phone);
-            
-            get(userRef).then(snap => {
+            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
                 if(snap.exists()) {
-                    // تسجيل دخول
+                    if(snap.val().banned === true) return alert("❌ تم حظر هذا الحساب من قبل الإدارة!");
                     if(snap.val().password === pass) {
                         localStorage.setItem('zeykor_phone', phone);
                         window.location.href = "index.html";
@@ -52,13 +38,13 @@
                     }
                 } else {
                     // إنشاء حساب جديد
-                    set(userRef, {
+                    set(ref(db, 'ZEYKOR/users/' + phone), {
                         balance: 0,
                         password: pass,
-                        nick: nick
+                        nick: "مستخدم",
+                        banned: false
                     }).then(() => {
                         localStorage.setItem('zeykor_phone', phone);
-                        alert("تم إنشاء الحساب بنجاح!");
                         window.location.href = "index.html";
                     });
                 }
