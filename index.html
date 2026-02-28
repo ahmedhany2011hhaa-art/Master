@@ -57,7 +57,7 @@
         const phone = localStorage.getItem('zeykor_phone');
         if(!phone) window.location.href = "login.html";
 
-        // تحديث الرصيد
+        // تحديث الرصيد لحظياً
         onValue(ref(db, 'ZEYKOR/users/' + phone), (snap) => {
             const b = snap.val()?.balance || 0;
             document.getElementById('u-balance').innerText = b;
@@ -66,22 +66,22 @@
 
         // دالة مشاهدة الإعلان
         window.watchAd = () => {
-            alert("جارِ تحميل الإعلان لدعم التطوير...");
+            alert("جارِ تحميل الإعلان لدعم التطوير... (سيفتح في صفحة جديدة)");
             
-            // 1. فتح الإعلان (رابطك)
-            window.open("https://pl28815852.effectivegatecpm.com/ea/a4/1d/eaa41deda9f49ea64b024749655dabf5.js", "_blank");
+            // فتح صفحة الإعلان التي أنشأناها
+            window.open("ad_page.html", "_blank");
             
-            // 2. الحصول على النقاط (بعد فترة محاكاة)
+            // إضافة النقاط (محاكاة)
             setTimeout(() => {
                 get(ref(db, 'ZEYKOR/config/adPoints')).then(snap => {
-                    const points = snap.val() || 50; // افتراضي 50 نقطة
+                    const points = snap.val() || 50; 
                     get(ref(db, 'ZEYKOR/users/' + phone)).then(userSnap => {
                         const curBal = userSnap.val().balance;
                         update(ref(db, 'ZEYKOR/users/' + phone), { balance: curBal + points });
                         alert(`مبروك! حصلت على ${points} نقاط دعم!`);
                     });
                 });
-            }, 5000); // محاكاة وقت الإعلان
+            }, 10000); // 10 ثواني محاكاة
         };
 
         // جلب الأدوات
@@ -108,9 +108,9 @@
             if(!fileUrl || fileUrl === "") return alert("رابط الملف غير متاح حالياً!");
             get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
                 let balance = snap.val()?.balance || 0;
-                if(balance < price) return alert("رصيدك لا يكفي!");
+                if(balance < price) return alert("لا يوجد رصيد كافي!");
                 update(ref(db, 'ZEYKOR/users/' + phone), { balance: balance - price });
-                alert("تم خصم النقاط! جارِ بدء التحميل...");
+                alert("تم خصم النقاط! جارِ بدء التحميل مباشرة...");
                 window.location.href = fileUrl;
             });
         };
