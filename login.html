@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER X | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#000;color:white;font-family:sans-serif;}</style>
+</head>
+<body class="flex flex-col justify-center items-center h-screen p-4">
+    <h1 class="text-4xl font-black text-red-500 mb-10">MASTER X</h1>
+    <input type="text" id="phone" placeholder="رقم الهاتف" class="w-full p-4 mb-3 bg-zinc-900 rounded-xl">
+    <input type="password" id="pass" placeholder="كلمة المرور" class="w-full p-4 mb-6 bg-zinc-900 rounded-xl">
+    <button onclick="login()" class="w-full bg-red-600 p-4 rounded-xl font-bold">دخول 🚀</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        window.login = () => {
+            const phone = document.getElementById('phone').value;
+            const pass = document.getElementById('pass').value;
+            if(!phone || !pass) return alert("املأ البيانات!");
+            
+            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
+                if(snap.exists() && snap.val().password === pass) {
+                    localStorage.setItem('zeykor_phone', phone);
+                    window.location.href = "index.html";
+                } else {
+                    alert("رقم الهاتف أو كلمة المرور خطأ!");
+                }
+            });
+        };
+    </script>
+</body>
+</html>
