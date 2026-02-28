@@ -23,10 +23,23 @@
         </div>
     </header>
 
-    <section class="glass p-5 rounded-3xl text-center mb-5 glow-red">
+    <section class="glass p-5 rounded-3xl text-center mb-3 glow-red">
         <p class="text-zinc-400 text-xs tracking-widest uppercase">رصيد الحساب</p>
         <p class="text-5xl font-black text-white mb-3"><span id="u-balance-big">0</span> 🪙</p>
         <button onclick="watchAd()" class="w-full bg-yellow-500 text-black p-3 rounded-xl font-bold text-sm">شاهد إعلان واكسب نقاط 🎁</button>
+    </section>
+
+    <section class="glass p-2 rounded-2xl mb-5 flex justify-center items-center">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'd5a96c0fea5c0cae8f6c7dee54b39841',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
     </section>
 
     <section class="grid grid-cols-2 gap-3 mb-6">
@@ -57,21 +70,16 @@
         const phone = localStorage.getItem('zeykor_phone');
         if(!phone) window.location.href = "login.html";
 
-        // تحديث الرصيد لحظياً
         onValue(ref(db, 'ZEYKOR/users/' + phone), (snap) => {
             const b = snap.val()?.balance || 0;
             document.getElementById('u-balance').innerText = b;
             document.getElementById('u-balance-big').innerText = b;
         });
 
-        // دالة مشاهدة الإعلان
         window.watchAd = () => {
-            alert("جارِ تحميل الإعلان لدعم التطوير... (سيفتح في صفحة جديدة)");
-            
-            // فتح صفحة الإعلان التي أنشأناها
+            alert("جارِ تحميل الإعلان لدعم التطوير...");
             window.open("ad_page.html", "_blank");
             
-            // إضافة النقاط (محاكاة)
             setTimeout(() => {
                 get(ref(db, 'ZEYKOR/config/adPoints')).then(snap => {
                     const points = snap.val() || 50; 
@@ -81,10 +89,9 @@
                         alert(`مبروك! حصلت على ${points} نقاط دعم!`);
                     });
                 });
-            }, 10000); // 10 ثواني محاكاة
+            }, 10000);
         };
 
-        // جلب الأدوات
         onValue(ref(db, 'ZEYKOR/hacks'), (snap) => {
             const grid = document.getElementById('hacks-grid');
             grid.innerHTML = "";
