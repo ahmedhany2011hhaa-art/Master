@@ -21,7 +21,7 @@
             databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
         }));
 
-        onValue(ref(db, 'ZEYKOR/users'), snap => {
+        onValue(ref(db, 'master_cheat/users'), snap => {
             const list = document.getElementById('leader-list');
             let users = [];
             snap.forEach(u => { users.push(u.val()); });
