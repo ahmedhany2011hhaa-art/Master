@@ -2,61 +2,486 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MASTER X | Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MASTER X | GAMES ARENA</title>
+    
+    <!-- Tailwind + Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .game-card { transition: 0.3s; border-bottom: 3px solid transparent; }
-        .game-card:active { transform: scale(0.95); border-color: #dc2626; }
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body, html {
+            background: #030303;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        /* Background Gradient */
+        .bg-gradient-custom {
+            background: radial-gradient(circle at 50% 50%, rgba(220,38,38,0.1) 0%, transparent 50%);
+        }
+        
+        /* Glass Card Effect */
+        .game-card {
+            background: linear-gradient(145deg, rgba(25,25,25,0.9), rgba(15,15,15,0.95));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 3px solid transparent;
+            border-radius: 2rem;
+            padding: 1.5rem 0.5rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-card:active {
+            transform: scale(0.95);
+        }
+        
+        .game-card[data-category="populer"] {
+            border-bottom-color: #dc2626;
+        }
+        
+        .game-card[data-category="new"] {
+            border-bottom-color: #22c55e;
+        }
+        
+        .game-card[data-category="hot"] {
+            border-bottom-color: #eab308;
+        }
+        
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 10px 10px rgba(220,38,38,0.3));
+            transition: transform 0.3s ease;
+        }
+        
+        .game-card:hover .game-icon {
+            transform: translateY(-5px) scale(1.1);
+        }
+        
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .badge.populer {
+            background: rgba(220,38,38,0.2);
+            color: #dc2626;
+            border: 1px solid rgba(220,38,38,0.3);
+        }
+        
+        .badge.new {
+            background: rgba(34,197,94,0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34,197,94,0.3);
+        }
+        
+        .badge.hot {
+            background: rgba(234,179,8,0.2);
+            color: #eab308;
+            border: 1px solid rgba(234,179,8,0.3);
+        }
+        
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 8px;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .nav-link {
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link.active {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+            font-weight: bold;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 10px;
+        }
+        
+        /* Search Bar */
+        .search-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 12px 20px;
+            width: 100%;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: rgba(220,38,38,0.05);
+        }
+        
+        /* Category Filter */
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .filter-chip.active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        .filter-chip:hover {
+            background: rgba(220,38,38,0.2);
+            color: white;
+        }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
     </style>
 </head>
-<body class="p-4 pb-24">
-    <h1 class="text-2xl font-black text-red-600 mb-6 italic border-r-4 border-red-600 pr-3">ساحة الألعاب 🎮</h1>
+<body>
+    <!-- Background Gradient -->
+    <div class="fixed inset-0 bg-gradient-custom pointer-events-none"></div>
 
-    <div class="grid grid-cols-2 gap-4">
-        <a href="mines.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">💣</span>
-            <p class="font-bold text-sm">الألغام (Mines)</p>
-        </a>
-        <a href="crash.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">✈️</span>
-            <p class="font-bold text-sm">الطيارة (Crash)</p>
-        </a>
-        <a href="dice.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">🎲</span>
-            <p class="font-bold text-sm">النرد (Dice)</p>
-        </a>
-        <a href="wheel.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">🎡</span>
-            <p class="font-bold text-sm">العجلة (Wheel)</p>
-        </a>
-        <a href="tower.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">🏰</span>
-            <p class="font-bold text-sm">البرج (Tower)</p>
-        </a>
-        <a href="coin.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">🪙</span>
-            <p class="font-bold text-sm">العملة (Coin)</p>
-        </a>
-        <a href="limbo.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">📉</span>
-            <p class="font-bold text-sm">ليمبو (Limbo)</p>
-        </a>
-        <a href="plinko.html" class="glass p-5 rounded-[2rem] text-center game-card">
-            <span class="text-4xl block mb-2">🎰</span>
-            <p class="font-bold text-sm">بلينكو (Plinko)</p>
-        </a>
+    <div class="p-4 pb-28" style="max-width: 500px; margin: 0 auto;">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="text-2xl text-zinc-500 hover:text-red-600 transition-colors">
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <h1 class="text-2xl font-black">
+                    <span class="text-red-600">🎮</span>
+                    <span class="text-white">ساحة الألعاب</span>
+                </h1>
+            </div>
+            <div class="glass px-4 py-2 rounded-full border border-red-900/30 flex items-center gap-2">
+                <i class="fas fa-coins text-yellow-500 text-xs"></i>
+                <span class="text-yellow-500 font-black text-sm" id="bal">0</span>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="mb-6">
+            <input type="text" id="searchInput" placeholder="🔍 بحث عن لعبة..." class="search-box">
+        </div>
+
+        <!-- Categories Filter -->
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2 hide-scrollbar">
+            <button class="filter-chip active" onclick="filterGames('all')">الكل</button>
+            <button class="filter-chip" onclick="filterGames('populer')">⭐ الأكثر لعباً</button>
+            <button class="filter-chip" onclick="filterGames('new')">🆕 أحدث الألعاب</button>
+            <button class="filter-chip" onclick="filterGames('hot')">🔥 ساخنة</button>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="grid grid-cols-2 gap-4 mb-6" id="gamesGrid">
+            <!-- Crash -->
+            <a href="crash.html" class="game-card" data-category="populer" data-name="crash">
+                <div class="badge populer">⭐ POPULER</div>
+                <div class="text-center">
+                    <div class="game-icon">✈️</div>
+                    <p class="font-bold text-sm">Crash</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">الطيارة</p>
+                    <div class="flex justify-center gap-1 mt-2 text-[8px] text-yellow-500">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Mines -->
+            <a href="mines.html" class="game-card" data-category="populer" data-name="mines">
+                <div class="badge populer">⭐ POPULER</div>
+                <div class="text-center">
+                    <div class="game-icon">💣</div>
+                    <p class="font-bold text-sm">Mines</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">الألغام</p>
+                    <div class="flex justify-center gap-1 mt-2 text-[8px] text-yellow-500">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Dice -->
+            <a href="dice.html" class="game-card" data-category="hot" data-name="dice">
+                <div class="badge hot">🔥 HOT</div>
+                <div class="text-center">
+                    <div class="game-icon">🎲</div>
+                    <p class="font-bold text-sm">Dice</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">النرد</p>
+                    <div class="flex justify-center gap-1 mt-2 text-[8px] text-yellow-500">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Wheel -->
+            <a href="wheel.html" class="game-card" data-category="hot" data-name="wheel">
+                <div class="badge hot">🔥 HOT</div>
+                <div class="text-center">
+                    <div class="game-icon">🎡</div>
+                    <p class="font-bold text-sm">Wheel</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">العجلة</p>
+                </div>
+            </a>
+
+            <!-- Tower -->
+            <a href="tower.html" class="game-card" data-category="new" data-name="tower">
+                <div class="badge new">🆕 NEW</div>
+                <div class="text-center">
+                    <div class="game-icon">🏰</div>
+                    <p class="font-bold text-sm">Tower</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">البرج</p>
+                </div>
+            </a>
+
+            <!-- Coin -->
+            <a href="coin.html" class="game-card" data-category="new" data-name="coin">
+                <div class="badge new">🆕 NEW</div>
+                <div class="text-center">
+                    <div class="game-icon">🪙</div>
+                    <p class="font-bold text-sm">Coin</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">العملة</p>
+                </div>
+            </a>
+
+            <!-- Limbo -->
+            <a href="limbo.html" class="game-card" data-category="populer" data-name="limbo">
+                <div class="badge populer">⭐ POPULER</div>
+                <div class="text-center">
+                    <div class="game-icon">📉</div>
+                    <p class="font-bold text-sm">Limbo</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">ليمبو</p>
+                </div>
+            </a>
+
+            <!-- Plinko -->
+            <a href="plinko.html" class="game-card" data-category="hot" data-name="plinko">
+                <div class="badge hot">🔥 HOT</div>
+                <div class="text-center">
+                    <div class="game-icon">🎰</div>
+                    <p class="font-bold text-sm">Plinko</p>
+                    <p class="text-[8px] text-zinc-500 mt-1">بلينكو</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Game Stats -->
+        <div class="glass-card p-4 rounded-2xl border border-white/5">
+            <div class="flex justify-between items-center text-xs text-zinc-400 mb-3">
+                <span>📊 إحصائيات اليوم</span>
+                <span class="text-red-600">مباشر</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-white/5 p-2 rounded-xl">
+                    <span class="text-lg font-black text-red-600" id="players-online">127</span>
+                    <p class="text-[8px] text-zinc-500">لاعب متصل</p>
+                </div>
+                <div class="bg-white/5 p-2 rounded-xl">
+                    <span class="text-lg font-black text-yellow-500" id="games-played">2.4k</span>
+                    <p class="text-[8px] text-zinc-500">لعبة اليوم</p>
+                </div>
+                <div class="bg-white/5 p-2 rounded-xl">
+                    <span class="text-lg font-black text-green-500" id="biggest-win">5.2k</span>
+                    <p class="text-[8px] text-zinc-500">أكبر فوز</p>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Navigation Bar -->
     <nav>
-        <a href="index.html" class="text-zinc-500 text-[10px] text-center">🏠<br>الرئيسية</a>
-        <a href="games.html" class="text-red-500 text-[10px] text-center font-bold">🎮<br>الألعاب</a>
-        <a href="leaderboard.html" class="text-zinc-500 text-[10px] text-center">🏆<br>الترتيب</a>
-        <a href="settings.html" class="text-zinc-500 text-[10px] text-center">⚙️<br>الإعدادات</a>
+        <a href="index.html" class="nav-link">🏠<br>الرئيسية</a>
+        <a href="games.html" class="nav-link active">🎮<br>الألعاب</a>
+        <a href="hacks.html" class="nav-link">🚀<br>الهاكات</a>
+        <a href="leaderboard.html" class="nav-link">🏆<br>الترتيب</a>
+        <a href="settings.html" class="nav-link">⚙️<br>الإعدادات</a>
     </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Firebase Config
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        // Get user balance
+        const phone = localStorage.getItem('zeykor_phone');
+        if(!phone) {
+            window.location.href = "login.html";
+        } else {
+            onValue(ref(db, `master_cheat/users/${phone}`), (snap) => {
+                const d = snap.val();
+                if(d) {
+                    document.getElementById('bal').innerText = d.balance || 0;
+                }
+            });
+        }
+
+        // Game Filter Function
+        window.filterGames = (category) => {
+            // Update filter chips
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter games
+            const games = document.querySelectorAll('.game-card');
+            games.forEach(game => {
+                if(category === 'all') {
+                    game.style.display = 'block';
+                } else {
+                    if(game.dataset.category === category) {
+                        game.style.display = 'block';
+                    } else {
+                        game.style.display = 'none';
+                    }
+                }
+            });
+        };
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const games = document.querySelectorAll('.game-card');
+            
+            games.forEach(game => {
+                const gameName = game.dataset.name.toLowerCase();
+                const gameTitle = game.querySelector('p.font-bold').innerText.toLowerCase();
+                
+                if(gameName.includes(searchTerm) || gameTitle.includes(searchTerm)) {
+                    game.style.display = 'block';
+                } else {
+                    game.style.display = 'none';
+                }
+            });
+        });
+
+        // Random stats generator
+        setInterval(() => {
+            document.getElementById('players-online').innerText = Math.floor(Math.random() * 200 + 50);
+            document.getElementById('games-played').innerText = (Math.random() * 3 + 1).toFixed(1) + 'k';
+            document.getElementById('biggest-win').innerText = Math.floor(Math.random() * 8000 + 1000);
+        }, 5000);
+    </script>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+    </style>
 </body>
 </html>

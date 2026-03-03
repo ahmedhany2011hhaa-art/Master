@@ -2,46 +2,301 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGNUP | MASTER CHEAT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SIGNUP | MASTER X ELITE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body { background: #050505; color: white; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { background: #030303; color: white; font-family: 'Cairo', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030303; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s, visibility 0.5s; }
+        .loader { width: 60px; height: 60px; border: 4px solid rgba(34,197,94,0.2); border-top: 4px solid #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; z-index: 10; }
+        .signup-card { background: rgba(10,10,10,0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); border-radius: 3rem; padding: 2.5rem 2rem; width: 100%; max-width: 450px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); position: relative; overflow: hidden; margin: 20px 0; }
+        .signup-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%); animation: rotate 20s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .logo { text-align: center; margin-bottom: 1.5rem; position: relative; z-index: 10; }
+        .logo-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(145deg, #22c55e, #16a34a); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2.5rem; box-shadow: 0 0 30px rgba(34,197,94,0.5); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .logo-text { font-size: 1.8rem; font-weight: 900; background: linear-gradient(45deg, #22c55e, #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { color: #666; font-size: 0.8rem; }
+        .steps { display: flex; justify-content: space-between; margin-bottom: 1rem; position: relative; z-index: 10; }
+        .step { text-align: center; color: #666; font-size: 0.7rem; transition: all 0.3s; }
+        .step.active { color: #22c55e; }
+        .step.completed { color: #16a34a; }
+        .step i { font-size: 1.2rem; margin-bottom: 0.3rem; display: block; }
+        .progress-container { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-bottom: 2rem; position: relative; z-index: 10; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); transition: width 0.3s ease; border-radius: 10px; }
+        .form-step { display: none; position: relative; z-index: 10; }
+        .form-step.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .form-group { margin-bottom: 1.5rem; }
+        .input-label { display: block; margin-bottom: 0.5rem; color: #999; font-size: 0.9rem; font-weight: 600; }
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-icon { position: absolute; right: 20px; color: #666; font-size: 1.2rem; z-index: 10; }
+        .form-input { width: 100%; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.05); border-radius: 2rem; padding: 1.2rem 3rem 1.2rem 1.5rem; color: white; font-size: 1rem; outline: none; transition: all 0.3s; font-family: 'Cairo', sans-serif; }
+        .form-input:focus { border-color: #22c55e; background: rgba(34,197,94,0.05); }
+        .form-input.error { border-color: #dc2626; }
+        .form-input::placeholder { color: #444; }
+        .btn-primary { width: 100%; background: linear-gradient(145deg, #22c55e, #16a34a); color: white; border: none; border-radius: 2rem; padding: 1.2rem; font-weight: 900; font-size: 1.2rem; cursor: pointer; transition: all 0.3s; margin-bottom: 1rem; box-shadow: 0 10px 20px rgba(34,197,94,0.3); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-nav { display: flex; gap: 10px; margin-top: 1rem; }
+        .btn-prev { flex: 1; padding: 1rem; border-radius: 2rem; background: rgba(255,255,255,0.05); color: white; border: none; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-next { flex: 1; padding: 1rem; border-radius: 2rem; background: #22c55e; color: white; border: none; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .btn-prev:hover { background: rgba(255,255,255,0.1); }
+        .btn-next:hover { background: #16a34a; }
+        .login-link { text-align: center; margin-top: 1.5rem; position: relative; z-index: 10; }
+        .login-link p { color: #666; font-size: 0.9rem; }
+        .login-link a { color: #22c55e; font-weight: bold; text-decoration: none; margin-right: 5px; }
+        .error-message { background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); border-radius: 1rem; padding: 1rem; margin-bottom: 1.5rem; color: #dc2626; font-size: 0.9rem; text-align: center; display: none; position: relative; z-index: 10; }
+        .error-message.show { display: block; animation: shake 0.5s ease; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px; }
+        .terms { display: flex; align-items: center; gap: 10px; margin: 1.5rem 0; color: #999; font-size: 0.9rem; position: relative; z-index: 10; }
+        .terms input { width: 20px; height: 20px; accent-color: #22c55e; cursor: pointer; }
+        .terms a { color: #22c55e; text-decoration: none; }
+        .password-strength { margin-top: 0.5rem; }
+        .strength-bar { display: flex; gap: 5px; margin-bottom: 0.3rem; }
+        .strength-segment { height: 4px; flex: 1; background: rgba(255,255,255,0.1); border-radius: 10px; transition: all 0.3s; }
+    </style>
 </head>
-<body class="p-6">
-    <div class="bg-zinc-900/50 p-8 w-full max-w-md rounded-[2.5rem] border border-white/5">
-        <h1 class="text-2xl font-black text-green-500 text-center mb-6">عضوية جديدة</h1>
-        <div class="space-y-4">
-            <input type="text" id="nick" placeholder="الاسم المستعار" class="w-full p-4 rounded-2xl bg-black border border-white/10">
-            <input type="tel" id="phone" placeholder="رقم الهاتف" class="w-full p-4 rounded-2xl bg-black border border-white/10">
-            <input type="password" id="pass" placeholder="كلمة السر" class="w-full p-4 rounded-2xl bg-black border border-white/10">
-            <button onclick="register()" class="w-full p-4 rounded-2xl bg-green-600 font-black">إنشاء الآن</button>
+<body>
+    <div id="loading-screen"><div class="loader"></div></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <div class="signup-card">
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="logo-text">انضم إلينا</div>
+                <div class="logo-sub">أنشئ حسابك مجاناً</div>
+            </div>
+
+            <div class="steps">
+                <div class="step active" id="step1"><i class="fas fa-user"></i><div>المعلومات</div></div>
+                <div class="step" id="step2"><i class="fas fa-lock"></i><div>الأمان</div></div>
+                <div class="step" id="step3"><i class="fas fa-check"></i><div>التأكيد</div></div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar" style="width: 33.33%"></div>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle ml-2"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <!-- Step 1: Basic Info -->
+            <div class="form-step active" id="step1Form">
+                <div class="form-group">
+                    <label class="input-label">الاسم المستعار</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="nickname" class="form-input" placeholder="اختر اسماً مستعاراً" maxlength="20">
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="input-label">رقم الهاتف</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" class="form-input" placeholder="أدخل رقم هاتفك" dir="ltr">
+                        <i class="fas fa-phone-alt input-icon"></i>
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-1">سيتم استخدامه لتسجيل الدخول</p>
+                </div>
+                <div class="form-group">
+                    <label class="input-label">البريد الإلكتروني (اختياري)</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="email" class="form-input" placeholder="example@email.com" dir="ltr">
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                </div>
+                <div class="btn-nav">
+                    <button class="btn-next" onclick="goToStep(2)">التالي <i class="fas fa-arrow-left mr-1"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Password -->
+            <div class="form-step" id="step2Form">
+                <div class="form-group">
+                    <label class="input-label">كلمة السر</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" class="form-input" placeholder="أدخل كلمة سر قوية" oninput="checkPasswordStrength()">
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-segment" id="seg1"></div>
+                            <div class="strength-segment" id="seg2"></div>
+                            <div class="strength-segment" id="seg3"></div>
+                        </div>
+                        <p class="text-[10px] text-zinc-500" id="strengthText">أدخل كلمة السر</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="input-label">تأكيد كلمة السر</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="أعد إدخال كلمة السر">
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                </div>
+                <div class="btn-nav">
+                    <button class="btn-prev" onclick="goToStep(1)"><i class="fas fa-arrow-right ml-1"></i> السابق</button>
+                    <button class="btn-next" onclick="goToStep(3)">التالي <i class="fas fa-arrow-left mr-1"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Confirm -->
+            <div class="form-step" id="step3Form">
+                <div class="text-center mb-6 relative z-10">
+                    <div class="text-6xl mb-4">🎮</div>
+                    <h3 class="text-xl font-black text-white mb-2">تأكيد إنشاء الحساب</h3>
+                    <p class="text-sm text-zinc-400">ستحصل على <span class="text-yellow-500 font-bold">500 🪙</span> هدية ترحيبية!</p>
+                </div>
+                <div id="summaryBox" class="bg-black/30 rounded-2xl p-4 mb-4 relative z-10 text-sm space-y-2">
+                    <div class="flex justify-between"><span class="text-zinc-400">الاسم المستعار:</span><span id="sumNick" class="font-bold text-white">--</span></div>
+                    <div class="flex justify-between"><span class="text-zinc-400">رقم الهاتف:</span><span id="sumPhone" class="font-bold text-white" dir="ltr">--</span></div>
+                </div>
+                <div class="terms relative z-10">
+                    <input type="checkbox" id="termsCheck">
+                    <label for="termsCheck">أوافق على <a href="#">شروط الاستخدام</a></label>
+                </div>
+                <button class="btn-primary" id="registerBtn" onclick="register()">
+                    <span id="regBtnText"><i class="fas fa-rocket ml-2"></i> إنشاء الحساب</span>
+                    <span id="regBtnSpinner" style="display:none;"><span class="spinner"></span></span>
+                </button>
+                <div class="btn-nav">
+                    <button class="btn-prev" onclick="goToStep(2)"><i class="fas fa-arrow-right ml-1"></i> السابق</button>
+                </div>
+            </div>
+
+            <div class="login-link">
+                <p>لديك حساب بالفعل؟ <a href="login.html">تسجيل الدخول</a></p>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const db = getDatabase(initializeApp({
             apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
             databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
         }));
 
-        window.register = async () => {
-            const p = document.getElementById('phone').value;
-            const n = document.getElementById('nick').value;
-            const ps = document.getElementById('pass').value;
+        window.addEventListener('load', () => { setTimeout(() => { const ls=document.getElementById('loading-screen'); ls.style.opacity='0'; ls.style.visibility='hidden'; }, 500); });
+        if(localStorage.getItem('zeykor_phone')) window.location.href = 'index.html';
 
-            const snap = await get(ref(db, `master_cheat/users/${p}`));
-            if(snap.exists()) return alert("الرقم مسجل مسبقاً!");
+        let currentStep = 1;
 
-            await set(ref(db, `master_cheat/users/${p}`), {
-                nick: n, pass: ps, balance: 500,
-                customID: `MC-${Math.floor(1000 + Math.random()*8999)}`
-            });
-            localStorage.setItem('zeykor_phone', p);
-            window.location.href = "index.html";
+        window.goToStep = (step) => {
+            if(step > currentStep && !validateStep(currentStep)) return;
+            document.getElementById('step' + currentStep + 'Form').classList.remove('active');
+            currentStep = step;
+            document.getElementById('step' + step + 'Form').classList.add('active');
+            document.getElementById('progressBar').style.width = (step/3*100) + '%';
+            // Update step indicators
+            for(let i=1; i<=3; i++) {
+                const el = document.getElementById('step' + i);
+                el.className = 'step' + (i < step ? ' completed' : i === step ? ' active' : '');
+            }
+            if(step === 3) {
+                document.getElementById('sumNick').textContent = document.getElementById('nickname').value;
+                document.getElementById('sumPhone').textContent = document.getElementById('phone').value;
+            }
         };
+
+        function validateStep(step) {
+            if(step === 1) {
+                const nick = document.getElementById('nickname').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                if(!nick || nick.length < 3) { showError("الاسم المستعار يجب أن يكون 3 أحرف على الأقل"); return false; }
+                if(!phone || phone.length < 7) { showError("أدخل رقم هاتف صحيح"); return false; }
+                return true;
+            }
+            if(step === 2) {
+                const pass = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                if(!pass || pass.length < 6) { showError("كلمة السر يجب أن تكون 6 أحرف على الأقل"); return false; }
+                if(pass !== confirm) { showError("كلمتا السر غير متطابقتين"); return false; }
+                return true;
+            }
+            return true;
+        }
+
+        window.checkPasswordStrength = () => {
+            const pass = document.getElementById('password').value;
+            const segs = ['seg1','seg2','seg3'];
+            let strength = 0;
+            if(pass.length >= 6) strength++;
+            if(pass.length >= 10) strength++;
+            if(/[A-Z]/.test(pass) || /[0-9]/.test(pass)) strength++;
+            const colors = ['#dc2626','#eab308','#22c55e'];
+            const labels = ['ضعيفة','متوسطة','قوية'];
+            segs.forEach((id, i) => {
+                document.getElementById(id).style.background = i < strength ? colors[strength-1] : 'rgba(255,255,255,0.1)';
+            });
+            document.getElementById('strengthText').textContent = pass.length > 0 ? ('قوة كلمة السر: ' + (labels[strength-1] || 'ضعيفة')) : 'أدخل كلمة السر';
+        };
+
+        window.register = async () => {
+            if(!document.getElementById('termsCheck').checked) { showError("يجب الموافقة على شروط الاستخدام"); return; }
+            const nick = document.getElementById('nickname').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            document.getElementById('regBtnText').style.display = 'none';
+            document.getElementById('regBtnSpinner').style.display = 'inline';
+            document.getElementById('registerBtn').disabled = true;
+            try {
+                const existing = await get(ref(db, `master_cheat/users/${phone}`));
+                if(existing.exists()) { showError("❌ رقم الهاتف مسجل بالفعل"); return; }
+                await set(ref(db, `master_cheat/users/${phone}`), {
+                    nick, phone, password,
+                    balance: 500,
+                    customID: 'ID-' + phone.slice(-4) + '-' + Math.random().toString(36).slice(2,5).toUpperCase(),
+                    createdAt: Date.now(),
+                    isAdmin: false
+                });
+                localStorage.setItem('zeykor_phone', phone);
+                alert('🎉 مبروك! تم إنشاء حسابك بنجاح. تفضل بـ 500 🪙 هدية!');
+                window.location.href = 'index.html';
+            } catch(e) {
+                showError("❌ خطأ في الاتصال. حاول مرة أخرى");
+            } finally {
+                document.getElementById('regBtnText').style.display = 'inline';
+                document.getElementById('regBtnSpinner').style.display = 'none';
+                document.getElementById('registerBtn').disabled = false;
+            }
+        };
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            const el = document.getElementById('errorMessage');
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 4000);
+        }
+
+        // BG Canvas
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCv() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCv(); window.addEventListener('resize', resizeCv);
+        const pts = Array.from({length: 50}, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4, r: Math.random()*2+0.5 }));
+        (function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            pts.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fillStyle = 'rgba(34,197,94,0.12)'; ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        })();
     </script>
 </body>
 </html>
