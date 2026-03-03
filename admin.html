@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>MASTER CHEAT | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#000;color:#eee;font-family:sans-serif;padding:20px;}</style>
+</head>
+<body>
+    <h1 class="text-2xl font-black text-red-600 mb-6 italic">لوحة تحكم MASTER CHEAT 👑</h1>
+
+    <div class="bg-zinc-900 p-6 rounded-3xl mb-6 border border-white/5">
+        <h3 class="text-yellow-500 font-bold mb-4">تعديل حساب لاعب</h3>
+        <input type="tel" id="target-phone" placeholder="رقم هاتف اللاعب" class="w-full bg-black p-4 rounded-xl mb-2 outline-none border border-zinc-800">
+        <input type="text" id="new-id" placeholder="المعرف الجديد (ID)" class="w-full bg-black p-4 rounded-xl mb-2 outline-none border border-zinc-800">
+        <input type="number" id="new-bal" placeholder="تعديل الرصيد" class="w-full bg-black p-4 rounded-xl mb-4 outline-none border border-zinc-800">
+        <button onclick="updateUser()" class="w-full bg-red-600 p-4 rounded-xl font-bold">تحديث البيانات</button>
+    </div>
+
+    <div id="users-list" class="space-y-3">
+        </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        window.updateUser = () => {
+            const p = document.getElementById('target-phone').value;
+            const nid = document.getElementById('new-id').value;
+            const nbal = document.getElementById('new-bal').value;
+            
+            let data = {};
+            if(nid) data.customID = nid;
+            if(nbal) data.balance = parseInt(nbal);
+
+            update(ref(db, `master_cheat/users/${p}`), data);
+            alert("تم التحديث بنجاح!");
+        };
+
+        // عرض المستخدمين من المسار الجديد
+        onValue(ref(db, 'master_cheat/users'), snap => {
+            const box = document.getElementById('users-list'); box.innerHTML = "";
+            snap.forEach(u => {
+                const d = u.val();
+                box.innerHTML += `
+                    <div class="bg-zinc-900 p-4 rounded-2xl flex justify-between items-center border border-white/5">
+                        <p class="text-xs">${d.nick}<br><span class="text-blue-500">${u.key}</span></p>
+                        <p class="font-bold text-yellow-500">${d.balance} 🪙</p>
+                    </div>`;
+            });
+        });
+    </script>
+</body>
+</html>

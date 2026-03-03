@@ -3,52 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MASTER X | Login</title>
+    <title>LOGIN | MASTER CHEAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body{background:#000;color:white;font-family:sans-serif;}</style>
+    <style>
+        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 2rem; }
+    </style>
 </head>
-<body class="flex flex-col justify-center items-center h-screen p-4">
-    <h1 class="text-4xl font-black text-red-500 mb-10">MASTER X</h1>
-    <input type="text" id="phone" placeholder="رقم الهاتف" class="w-full p-4 mb-3 bg-zinc-900 rounded-xl">
-    <input type="password" id="pass" placeholder="كلمة المرور" class="w-full p-4 mb-6 bg-zinc-900 rounded-xl">
-    <button onclick="auth()" class="w-full bg-red-600 p-4 rounded-xl font-bold">دخول 🚀</button>
+<body class="p-6">
+    <div class="glass p-8 w-full max-w-md">
+        <h1 class="text-3xl font-black text-red-600 italic text-center mb-8">MASTER CHEAT</h1>
+        <div class="space-y-4">
+            <input type="tel" id="phone" placeholder="رقم الهاتف" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-red-600">
+            <input type="password" id="pass" placeholder="كلمة السر" class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-red-600">
+            <button onclick="login()" id="btn" class="w-full p-4 rounded-2xl bg-red-600 font-black shadow-lg shadow-red-900/40">دخول</button>
+            <p class="text-center text-xs text-zinc-500">ليس لديك حساب؟ <a href="signup.html" class="text-red-500">إنشاء حساب</a></p>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
-        
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
         const db = getDatabase(initializeApp({
             apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
             databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
         }));
 
-        window.auth = () => {
-            const phone = document.getElementById('phone').value;
-            const pass = document.getElementById('pass').value;
-            if(!phone || !pass) return alert("املأ البيانات!");
+        window.login = async () => {
+            const p = document.getElementById('phone').value;
+            const ps = document.getElementById('pass').value;
+            const b = document.getElementById('btn');
             
-            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
-                if(snap.exists()) {
-                    if(snap.val().banned === true) return alert("❌ تم حظر هذا الحساب من قبل الإدارة!");
-                    if(snap.val().password === pass) {
-                        localStorage.setItem('zeykor_phone', phone);
-                        window.location.href = "index.html";
-                    } else {
-                        alert("كلمة المرور خطأ!");
-                    }
-                } else {
-                    // إنشاء حساب جديد
-                    set(ref(db, 'ZEYKOR/users/' + phone), {
-                        balance: 0,
-                        password: pass,
-                        nick: "مستخدم",
-                        banned: false
-                    }).then(() => {
-                        localStorage.setItem('zeykor_phone', phone);
-                        window.location.href = "index.html";
-                    });
-                }
-            });
+            b.innerText = "جاري التحقق...";
+            const snap = await get(ref(db, `master_cheat/users/${p}`));
+            if(snap.exists() && snap.val().pass === ps) {
+                localStorage.setItem('zeykor_phone', p);
+                window.location.href = "index.html";
+            } else {
+                alert("بيانات خاطئة!");
+                b.innerText = "دخول";
+            }
         };
     </script>
 </body>

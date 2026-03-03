@@ -2,90 +2,75 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master X | Crash</title>
+    <title>CRASH | MASTER CHEAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body{background:#000;color:white;}</style>
+    <style>
+        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; text-align: center; }
+        .chart { height: 200px; display: flex; align-items: flex-end; justify-content: center; font-size: 50px; font-weight: 900; color: #dc2626; }
+    </style>
 </head>
-<body class="p-4">
-    <div class="flex justify-between p-3 bg-zinc-900 rounded-xl mb-4">
-        <a href="./index.html">🔙</a>
-        <span id="balance">0</span> 🪙
+<body class="p-6">
+    <div class="flex justify-between mb-10">
+        <a href="index.html">🔙</a>
+        <p id="bal" class="text-yellow-500 font-bold">0</p>
     </div>
 
-    <div class="text-center p-10 bg-zinc-900 rounded-2xl mb-4">
-        <div id="counter" class="text-5xl font-black">1.00x</div>
-    </div>
+    <div class="chart italic" id="multiplier">1.00x</div>
+    <p class="text-zinc-500 mb-10">الارتفاع الحالي ✈️</p>
 
-    <input type="number" id="bet-amount" placeholder="المبلغ" class="w-full p-4 rounded-xl bg-zinc-900 mb-3 text-center">
-    <button id="play-btn" onclick="startCrash()" class="w-full bg-red-600 p-4 rounded-xl font-bold">بدء 🚀</button>
-    <button id="cashout-btn" onclick="cashOut()" class="w-full bg-green-600 p-4 rounded-xl font-bold hidden">كاش أوت! 💰</button>
+    <input type="number" id="bet" placeholder="مبلغ الرهان" class="w-full p-4 rounded-2xl bg-zinc-900 border border-white/10 mb-4 text-center outline-none">
+    
+    <button id="btn-start" onclick="startFly()" class="w-full p-5 rounded-2xl bg-red-600 font-black text-xl">ابدأ الإقلاع</button>
+    <button id="btn-cash" onclick="cashout()" class="w-full p-5 rounded-2xl bg-green-600 font-black text-xl hidden">سحب الأرباح!</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         const db = getDatabase(initializeApp({
             apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
             databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
         }));
-        
+
         const phone = localStorage.getItem('zeykor_phone');
-        let currentMultiplier = 1.0, isPlaying = false, interval, userLuck = 50;
+        let multi = 1.0, timer, betVal = 0;
 
-        // جلب الحظ من الأدمن
-        onValue(ref(db, 'ZEYKOR/config/luck/crash'), snap => { userLuck = snap.val() || 50; });
-        onValue(ref(db, 'ZEYKOR/users/' + phone), snap => { document.getElementById('balance').innerText = snap.val()?.balance || 0; });
+        onValue(ref(db, `master_cheat/users/${phone}`), s => document.getElementById('bal').innerText = s.val().balance);
 
-        window.startCrash = () => {
-            let bet = parseInt(document.getElementById('bet-amount').value);
-            if(isNaN(bet) || bet <= 0) return alert("حدد مبلغ!");
+        window.startFly = async () => {
+            betVal = parseInt(document.getElementById('bet').value);
+            const s = await get(ref(db, `master_cheat/users/${phone}`));
+            if(s.val().balance < betVal) return alert("رصيد ناقص!");
+
+            update(ref(db, `master_cheat/users/${phone}`), { balance: s.val().balance - betVal });
             
-            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
-                if(bet > (snap.val()?.balance || 0)) return alert("رصيد غير كافي!");
-                update(ref(db, 'ZEYKOR/users/' + phone), { balance: snap.val().balance - bet });
+            document.getElementById('btn-start').classList.add('hidden');
+            document.getElementById('btn-cash').classList.remove('hidden');
+            
+            multi = 1.0;
+            const crashPoint = (Math.random() * 5 + 1).toFixed(2);
+            
+            timer = setInterval(() => {
+                multi += 0.05;
+                document.getElementById('multiplier').innerText = multi.toFixed(2) + "x";
                 
-                isPlaying = true;
-                currentMultiplier = 1.0;
-                
-                // 💡 معادلة الحظ (إذا الحظ منخفض، الانفجار يكون سريع)
-                let maxCrash = 1.0 + (userLuck / 10); 
-                let crashPoint = (Math.random() * maxCrash) + 1.0;
-                
-                document.getElementById('play-btn').classList.add('hidden');
-                document.getElementById('cashout-btn').classList.remove('hidden');
-
-                interval = setInterval(() => {
-                    currentMultiplier += 0.05;
-                    document.getElementById('counter').innerText = currentMultiplier.toFixed(2) + "x";
-                    if (currentMultiplier >= crashPoint) {
-                        clearInterval(interval);
-                        document.getElementById('counter').innerText = "💥 انفجرت!";
-                        isPlaying = false;
-                        setTimeout(resetGame, 2000);
-                    }
-                }, 100);
-            });
+                if(multi >= crashPoint) {
+                    clearInterval(timer);
+                    document.getElementById('multiplier').innerText = "BOOM! 💥";
+                    document.getElementById('multiplier').style.color = "gray";
+                    setTimeout(() => location.reload(), 2000);
+                }
+            }, 100);
         };
 
-        window.cashOut = () => {
-            if(!isPlaying) return;
-            clearInterval(interval);
-            let bet = parseInt(document.getElementById('bet-amount').value);
-            let profit = Math.floor(bet * currentMultiplier);
-            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
-                update(ref(db, 'ZEYKOR/users/' + phone), { balance: snap.val().balance + profit });
-                document.getElementById('counter').innerText = "فوز: " + profit + " 🪙";
-                isPlaying = false;
-                setTimeout(resetGame, 2000);
-            });
+        window.cashout = async () => {
+            clearInterval(timer);
+            const win = Math.floor(betVal * multi);
+            const s = await get(ref(db, `master_cheat/users/${phone}`));
+            await update(ref(db, `master_cheat/users/${phone}`), { balance: s.val().balance + win });
+            alert("ربحت: " + win);
+            location.reload();
         };
-
-        function resetGame() {
-            document.getElementById('play-btn').classList.remove('hidden');
-            document.getElementById('cashout-btn').classList.add('hidden');
-            document.getElementById('counter').innerText = "1.00x";
-        }
     </script>
 </body>
 </html>

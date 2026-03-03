@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER X | Community</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; overflow: hidden; }
+        .chat-box { height: calc(100vh - 400px); overflow-y: auto; }
+        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); }
+    </style>
+</head>
+<body class="p-4 flex flex-col h-screen">
+    <h1 class="text-xl font-black mb-4 italic text-red-600">المجتمع والرومات 💬</h1>
+
+    <div class="flex gap-2 mb-4">
+        <button id="btn-chat" onclick="tab('chat')" class="flex-1 bg-red-600 p-2 rounded-xl text-xs font-bold">الشات العام</button>
+        <button id="btn-rooms" onclick="tab('rooms')" class="flex-1 bg-zinc-900 p-2 rounded-xl text-xs font-bold">رومات التحدي</button>
+    </div>
+
+    <div id="tab-chat" class="flex-1 flex flex-col">
+        <div id="chat-msgs" class="chat-box space-y-3 mb-4 p-2"></div>
+        <div class="glass p-2 rounded-2xl flex gap-2 border border-white/10">
+            <input type="text" id="msg-input" placeholder="اكتب رسالة..." class="bg-transparent flex-1 outline-none px-2 text-sm">
+            <button onclick="send()" class="bg-red-600 px-4 py-2 rounded-xl text-xs font-bold">إرسال</button>
+        </div>
+    </div>
+
+    <div id="tab-rooms" class="hidden flex-1 overflow-y-auto">
+        <button onclick="createRoom()" class="w-full bg-blue-600 p-3 rounded-2xl font-black text-sm mb-4">+ إنشاء روم تحدي PvP</button>
+        <div id="rooms-list" class="space-y-3"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, push, serverTimestamp, set } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        const phone = localStorage.getItem('zeykor_phone');
+        let myNick = "", myID = "";
+
+        onValue(ref(db, `ZEYKOR/users/${phone}`), snap => {
+            myNick = snap.val().nick;
+            myID = snap.val().customID || `ID-${phone.slice(-4)}`;
+        });
+
+        window.send = () => {
+            const text = document.getElementById('msg-input').value;
+            if(!text) return;
+            push(ref(db, 'ZEYKOR/chat'), { sender: myNick, id: myID, msg: text, time: serverTimestamp() });
+            document.getElementById('msg-input').value = "";
+        };
+
+        onValue(ref(db, 'ZEYKOR/chat'), snap => {
+            const box = document.getElementById('chat-msgs'); box.innerHTML = "";
+            snap.forEach(m => {
+                const d = m.val();
+                box.innerHTML += `<div class="bg-white/5 p-3 rounded-2xl"><p class="text-[9px] text-red-500 font-bold">${d.id} • ${d.sender}</p><p class="text-xs mt-1">${d.msg}</p></div>`;
+            });
+            box.scrollTop = box.scrollHeight;
+        });
+
+        window.tab = (t) => {
+            document.getElementById('tab-chat').classList.toggle('hidden', t !== 'chat');
+            document.getElementById('tab-rooms').classList.toggle('hidden', t !== 'rooms');
+            document.getElementById('btn-chat').className = t === 'chat' ? 'flex-1 bg-red-600 p-2 rounded-xl text-xs font-bold' : 'flex-1 bg-zinc-900 p-2 rounded-xl text-xs font-bold';
+            document.getElementById('btn-rooms').className = t === 'rooms' ? 'flex-1 bg-red-600 p-2 rounded-xl text-xs font-bold' : 'flex-1 bg-zinc-900 p-2 rounded-xl text-xs font-bold';
+        };
+    </script>
+</body>
+</html>

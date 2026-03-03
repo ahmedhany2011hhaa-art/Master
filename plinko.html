@@ -2,65 +2,63 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master X | Plinko</title>
+    <title>PLINKO | MASTER CHEAT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>body{background:#000;color:white;}</style>
+    <style>
+        body { background: #050505; color: white; text-align: center; font-family: 'Cairo'; }
+        .slot { display: inline-block; width: 40px; padding: 10px 0; margin: 2px; border-radius: 8px; font-weight: 900; font-size: 10px; }
+    </style>
 </head>
-<body class="p-4">
-    <div class="flex justify-between p-3 bg-zinc-900 rounded-xl mb-4">
-        <a href="./index.html">🔙</a>
-        <span id="balance">0</span> 🪙
+<body class="p-6">
+    <h1 class="text-xl font-black mb-10 text-blue-500">PLINKO BOARD 🔵</h1>
+    
+    <div id="game-area" class="mb-10 p-4 bg-zinc-900 rounded-3xl min-h-[200px] flex items-center justify-center italic text-zinc-700">
+        اضغط لرمي الكرة
     </div>
 
-    <div class="text-center p-10 bg-zinc-900 rounded-2xl mb-4 h-64">
-        <div id="result" class="text-3xl font-black mt-10">🎰</div>
+    <div class="flex justify-center mb-6">
+        <div class="slot bg-red-600">0.2x</div>
+        <div class="slot bg-orange-500">0.5x</div>
+        <div class="slot bg-yellow-500">1.5x</div>
+        <div class="slot bg-green-500">5.0x</div>
+        <div class="slot bg-orange-500">0.5x</div>
+        <div class="slot bg-red-600">0.2x</div>
     </div>
 
-    <input type="number" id="bet-amount" placeholder="المبلغ" class="w-full p-4 rounded-xl bg-zinc-900 mb-3 text-center">
-    <button onclick="dropBall()" class="w-full bg-red-600 p-4 rounded-xl font-bold">إسقاط الكرة 🔴</button>
+    <input type="number" id="bet" value="100" class="w-full bg-zinc-900 p-4 rounded-2xl mb-4 text-center outline-none">
+    <button onclick="dropBall()" class="w-full p-5 rounded-2xl bg-blue-600 font-black">إسقاط الكرة</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, update, get, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         const db = getDatabase(initializeApp({
             apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
             databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
         }));
-        
+
         const phone = localStorage.getItem('zeykor_phone');
-        let userLuck = 50;
-        onValue(ref(db, 'ZEYKOR/config/luck/plinko'), snap => { userLuck = snap.val() || 50; });
-        onValue(ref(db, 'ZEYKOR/users/' + phone), snap => { document.getElementById('balance').innerText = snap.val()?.balance || 0; });
 
-        window.dropBall = () => {
-            let bet = parseInt(document.getElementById('bet-amount').value);
-            if(isNaN(bet) || bet <= 0) return alert("حدد مبلغ!");
+        window.dropBall = async () => {
+            const b = parseInt(document.getElementById('bet').value);
+            const userRef = ref(db, `master_cheat/users/${phone}`);
+            const s = await get(userRef);
             
-            get(ref(db, 'ZEYKOR/users/' + phone)).then(snap => {
-                if(bet > (snap.val()?.balance || 0)) return alert("رصيد غير كافي!");
-                update(ref(db, 'ZEYKOR/users/' + phone), { balance: snap.val().balance - bet });
+            if(s.val().balance < b) return alert("لا يوجد رصيد");
+            await update(userRef, { balance: s.val().balance - b });
 
-                document.getElementById('result').innerText = "🔴";
+            const area = document.getElementById('game-area');
+            area.innerText = "🔵 جاري الإسقاط...";
+            
+            setTimeout(async () => {
+                const results = [0.2, 0.5, 1.5, 5.0, 0.5, 0.2];
+                const winMulti = results[Math.floor(Math.random()*results.length)];
+                const totalWin = Math.floor(b * winMulti);
                 
-                setTimeout(() => {
-                    // 💡 معادلة الحظ: تعتمد على نسبة الحظ من الأدمن
-                    let multipliers = [0, 0.2, 0.5, 1, 1.5, 2, 5];
-                    
-                    // إذا كان الحظ عالياً، نزيد احتمالية الأرقام الكبيرة
-                    if(userLuck > 70) multipliers = [0.5, 1, 1.5, 2, 5, 10];
-                    if(userLuck < 30) multipliers = [0, 0, 0.1, 0.5, 1];
-
-                    let m = multipliers[Math.floor(Math.random() * multipliers.length)];
-                    let profit = Math.floor(bet * m);
-                    
-                    get(ref(db, 'ZEYKOR/users/' + phone)).then(userSnap => {
-                        update(ref(db, 'ZEYKOR/users/' + phone), { balance: userSnap.val().balance + profit });
-                        document.getElementById('result').innerText = m + "x (" + profit + "🪙)";
-                    });
-                }, 1500);
-            });
+                area.innerHTML = `<span class="text-4xl text-white font-black">${winMulti}x</span>`;
+                const s2 = await get(userRef);
+                await update(userRef, { balance: s2.val().balance + totalWin });
+            }, 1000);
         };
     </script>
 </body>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER X | Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background: #050505; color: white; font-family: 'Cairo', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .game-card { transition: 0.3s; border-bottom: 3px solid transparent; }
+        .game-card:active { transform: scale(0.95); border-color: #dc2626; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,0.9); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #222; }
+    </style>
+</head>
+<body class="p-4 pb-24">
+    <h1 class="text-2xl font-black text-red-600 mb-6 italic border-r-4 border-red-600 pr-3">ساحة الألعاب 🎮</h1>
+
+    <div class="grid grid-cols-2 gap-4">
+        <a href="mines.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">💣</span>
+            <p class="font-bold text-sm">الألغام (Mines)</p>
+        </a>
+        <a href="crash.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">✈️</span>
+            <p class="font-bold text-sm">الطيارة (Crash)</p>
+        </a>
+        <a href="dice.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">🎲</span>
+            <p class="font-bold text-sm">النرد (Dice)</p>
+        </a>
+        <a href="wheel.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">🎡</span>
+            <p class="font-bold text-sm">العجلة (Wheel)</p>
+        </a>
+        <a href="tower.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">🏰</span>
+            <p class="font-bold text-sm">البرج (Tower)</p>
+        </a>
+        <a href="coin.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">🪙</span>
+            <p class="font-bold text-sm">العملة (Coin)</p>
+        </a>
+        <a href="limbo.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">📉</span>
+            <p class="font-bold text-sm">ليمبو (Limbo)</p>
+        </a>
+        <a href="plinko.html" class="glass p-5 rounded-[2rem] text-center game-card">
+            <span class="text-4xl block mb-2">🎰</span>
+            <p class="font-bold text-sm">بلينكو (Plinko)</p>
+        </a>
+    </div>
+
+    <nav>
+        <a href="index.html" class="text-zinc-500 text-[10px] text-center">🏠<br>الرئيسية</a>
+        <a href="games.html" class="text-red-500 text-[10px] text-center font-bold">🎮<br>الألعاب</a>
+        <a href="leaderboard.html" class="text-zinc-500 text-[10px] text-center">🏆<br>الترتيب</a>
+        <a href="settings.html" class="text-zinc-500 text-[10px] text-center">⚙️<br>الإعدادات</a>
+    </nav>
+</body>
+</html>

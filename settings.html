@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>MASTER X | Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#050505;color:white;font-family:'Cairo',sans-serif;}</style>
+</head>
+<body class="p-6">
+    <h1 class="text-xl font-black text-zinc-500 mb-8">الإعدادات ⚙️</h1>
+
+    <div class="space-y-4">
+        <div class="bg-zinc-900 p-4 rounded-2xl">
+            <p class="text-[10px] text-zinc-500">الاسم المستعار</p>
+            <p id="s-nick" class="font-bold">جاري التحميل..</p>
+        </div>
+        <div class="bg-zinc-900 p-4 rounded-2xl text-red-500 font-bold" onclick="logout()">
+            تسجيل الخروج 🚪
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('s-nick').innerText = localStorage.getItem('zeykor_phone') || "Unknown";
+        function logout() { localStorage.clear(); window.location.href="login.html"; }
+    </script>
+</body>
+</html>

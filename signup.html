@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGNUP | MASTER CHEAT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { background: #050505; color: white; font-family: 'Cairo', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }</style>
+</head>
+<body class="p-6">
+    <div class="bg-zinc-900/50 p-8 w-full max-w-md rounded-[2.5rem] border border-white/5">
+        <h1 class="text-2xl font-black text-green-500 text-center mb-6">عضوية جديدة</h1>
+        <div class="space-y-4">
+            <input type="text" id="nick" placeholder="الاسم المستعار" class="w-full p-4 rounded-2xl bg-black border border-white/10">
+            <input type="tel" id="phone" placeholder="رقم الهاتف" class="w-full p-4 rounded-2xl bg-black border border-white/10">
+            <input type="password" id="pass" placeholder="كلمة السر" class="w-full p-4 rounded-2xl bg-black border border-white/10">
+            <button onclick="register()" class="w-full p-4 rounded-2xl bg-green-600 font-black">إنشاء الآن</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        window.register = async () => {
+            const p = document.getElementById('phone').value;
+            const n = document.getElementById('nick').value;
+            const ps = document.getElementById('pass').value;
+
+            const snap = await get(ref(db, `master_cheat/users/${p}`));
+            if(snap.exists()) return alert("الرقم مسجل مسبقاً!");
+
+            await set(ref(db, `master_cheat/users/${p}`), {
+                nick: n, pass: ps, balance: 500,
+                customID: `MC-${Math.floor(1000 + Math.random()*8999)}`
+            });
+            localStorage.setItem('zeykor_phone', p);
+            window.location.href = "index.html";
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>MASTER X | Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#050505;color:white;font-family:'Cairo',sans-serif;}</style>
+</head>
+<body class="p-4">
+    <h1 class="text-xl font-black mb-6 text-red-600 italic">مستودع الهاكات 🚀</h1>
+    <div id="hacks-grid" class="grid grid-cols-1 gap-4 pb-24"></div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        onValue(ref(db, 'ZEYKOR/hacks'), snap => {
+            const grid = document.getElementById('hacks-grid'); grid.innerHTML = "";
+            snap.forEach(h => {
+                const d = h.val();
+                grid.innerHTML += `
+                    <div class="bg-zinc-900 p-4 rounded-3xl flex justify-between items-center border border-white/5">
+                        <div><p class="font-bold">${d.name}</p><p class="text-yellow-500 text-sm font-black">${d.price} 🪙</p></div>
+                        <button onclick="buy('${h.key}', ${d.price}, '${d.fileUrl}')" class="bg-red-600 px-6 py-2 rounded-xl font-bold text-xs">شراء</button>
+                    </div>`;
+            });
+        });
+        
+        window.buy = (id, price, url) => {
+            const ph = localStorage.getItem('zeykor_phone');
+            get(ref(db, `ZEYKOR/users/${ph}`)).then(s => {
+                if(s.val().balance < price) return alert("لا يوجد رصيد!");
+                update(ref(db, `ZEYKOR/users/${ph}`), { balance: s.val().balance - price });
+                window.location.href = url;
+            });
+        };
+    </script>
+</body>
+</html>
