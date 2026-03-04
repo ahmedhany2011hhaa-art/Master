@@ -245,8 +245,15 @@
         </header>
 
         <!-- Search Bar -->
-        <div class="mb-6">
+        <div class="mb-4">
             <input type="text" id="searchInput" placeholder="🔍 بحث عن لعبة..." class="search-box">
+        </div>
+
+        <!-- AD -->
+        <div style="margin:12px 0;border-radius:1.25rem;overflow:hidden;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.04);display:flex;justify-content:center;align-items:center;min-height:60px;position:relative">
+            <span style="position:absolute;top:4px;right:10px;font-size:8px;color:#333;font-family:'Cairo',sans-serif">إعلان</span>
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
         </div>
 
         <!-- Categories Filter -->
@@ -361,6 +368,10 @@
             </a>
         </div>
 
+        <!-- AD -->
+        <div style="margin:12px 0;border-radius:1.25rem;overflow:hidden;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.04);display:flex;justify-content:center;align-items:center;min-height:60px">
+        </div>
+
         <!-- Game Stats -->
         <div class="glass-card p-4 rounded-2xl border border-white/5">
             <div class="flex justify-between items-center text-xs text-zinc-400 mb-3">
@@ -394,8 +405,8 @@
     </nav>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         // Firebase Config
         const db = getDatabase(initializeApp({

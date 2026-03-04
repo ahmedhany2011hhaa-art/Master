@@ -10,46 +10,52 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { background: #030303; color: white; font-family: 'Cairo', sans-serif; overflow-x: hidden; min-height: 100vh; }
-
-        #loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #030303; display: flex; align-items: center; justify-content: center;
-            z-index: 9999; transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-        .loader { width: 60px; height: 60px; border: 4px solid rgba(220,38,38,0.2); border-top: 4px solid #dc2626; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
-        .glass-card { background: linear-gradient(145deg, rgba(20,20,20,0.8), rgba(10,10,10,0.9)); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.03); border-radius: 2rem; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08); }
-
+        .glass-card { background: linear-gradient(145deg, rgba(20,20,20,0.8), rgba(10,10,10,0.9)); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.03); border-radius: 2rem; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,5,0.85); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-around; padding: 12px 8px; z-index: 1000; }
         .nav-link { font-size: 10px; color: #666; text-align: center; text-decoration: none; padding: 6px 12px; border-radius: 30px; transition: all 0.3s; }
         .nav-link.active { color: #dc2626; background: rgba(220,38,38,0.1); font-weight: bold; }
+        #loading-screen { position: fixed; top:0;left:0;width:100%;height:100%;background:#030303;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.3s ease,visibility 0.3s ease; }
+        .loader { width: 60px; height: 60px; border: 4px solid rgba(220,38,38,0.2); border-top: 4px solid #dc2626; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        canvas#bg-canvas { position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.4;pointer-events:none; }
 
-        .ad-container { margin: 15px 0; display: flex; justify-content: center; overflow: hidden; border-radius: 20px; background: rgba(0,0,0,0.3); min-height: 60px; }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #111; }
-        ::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 10px; }
+        /* Ad containers - styled nicely, never hide content */
+        .ad-wrap {
+            margin: 12px 0;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60px;
+            position: relative;
+        }
+        .ad-wrap::before {
+            content: 'إعلان';
+            position: absolute;
+            top: 4px;
+            right: 10px;
+            font-size: 8px;
+            color: #333;
+            font-family: 'Cairo', sans-serif;
+            pointer-events: none;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
+    <div id="loading-screen"><div class="loader"></div></div>
 
-    <!-- Loading Screen -->
-    <div id="loading-screen">
-        <div class="loader"></div>
-    </div>
-
-    <div class="p-4 pb-28" style="max-width: 500px; margin: 0 auto;">
+    <div class="p-4 pb-28" style="max-width:500px;margin:0 auto;position:relative;z-index:10">
 
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6" data-aos="fade-down">
+        <header class="flex justify-between items-center mb-4" data-aos="fade-down">
             <h1 class="text-3xl font-black">
-                <span class="text-red-600">MASTER</span>
-                <span class="text-white">X</span>
+                <span class="text-red-600">MASTER</span><span class="text-white">X</span>
                 <span class="text-xs text-zinc-600 block font-normal">ELITE EDITION</span>
             </h1>
             <div class="glass px-4 py-2 rounded-full border border-red-900/30 flex items-center gap-2">
@@ -58,8 +64,14 @@
             </div>
         </header>
 
+        <!-- AD 1 — أعلى الصفحة -->
+        <div class="ad-wrap" data-aos="fade-up">
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
+        </div>
+
         <!-- User Profile Card -->
-        <div class="glass-card p-5 mb-6 border-l-4 border-red-600 relative overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+        <div class="glass-card p-5 mb-4 border-l-4 border-red-600 relative overflow-hidden" data-aos="fade-up" data-aos-delay="80">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">المعرف الرقمي</p>
@@ -75,9 +87,15 @@
             </div>
         </div>
 
+        <!-- AD 2 — بعد البروفايل -->
+        <div class="ad-wrap" data-aos="fade-up">
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
+        </div>
+
         <!-- Rewards & Community Grid -->
-        <div class="grid grid-cols-2 gap-3 mb-6" data-aos="fade-up" data-aos-delay="200">
-            <button onclick="showRewardAd()" class="glass-card p-5 text-center relative overflow-hidden group">
+        <div class="grid grid-cols-2 gap-3 mb-4" data-aos="fade-up" data-aos-delay="120">
+            <button onclick="showRewardAd(event)" class="glass-card p-5 text-center relative overflow-hidden group">
                 <span class="text-4xl block mb-2 transform group-hover:scale-110 transition-transform">🎁</span>
                 <span class="text-xs font-bold text-white">شاهد واكسب</span>
                 <span class="block text-[8px] text-yellow-600 mt-1">50 نقطة</span>
@@ -89,165 +107,140 @@
             </button>
         </div>
 
-        <!-- Ad Container -->
-        <div class="ad-container my-4" data-aos="fade-up" data-aos-delay="300">
-            <script>atOptions = { 'key' : 'd5a96c0fea5c0cae8f6c7dee54b39841', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };</script>
+        <!-- AD 3 — بعد الأزرار -->
+        <div class="ad-wrap" data-aos="fade-up">
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
             <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
         </div>
 
         <!-- Games Quick Access -->
-        <div class="mb-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="mb-4" data-aos="fade-up" data-aos-delay="180">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-bold text-zinc-400">الألعاب السريعة 🎮</h2>
                 <a href="games.html" class="text-[10px] text-red-600">عرض الكل</a>
             </div>
             <div class="grid grid-cols-4 gap-2">
-                <a href="crash.html" class="glass-card p-3 text-center">
-                    <span class="text-2xl">✈️</span>
-                    <span class="block text-[8px] mt-1">Crash</span>
-                </a>
-                <a href="mines.html" class="glass-card p-3 text-center">
-                    <span class="text-2xl">💣</span>
-                    <span class="block text-[8px] mt-1">Mines</span>
-                </a>
-                <a href="plinko.html" class="glass-card p-3 text-center">
-                    <span class="text-2xl">🎰</span>
-                    <span class="block text-[8px] mt-1">Plinko</span>
-                </a>
-                <a href="games.html" class="glass-card p-3 text-center">
-                    <span class="text-2xl">🎮</span>
-                    <span class="block text-[8px] mt-1">المزيد</span>
-                </a>
+                <a href="crash.html"  class="glass-card p-3 text-center"><span class="text-2xl">✈️</span><span class="block text-[8px] mt-1">Crash</span></a>
+                <a href="mines.html"  class="glass-card p-3 text-center"><span class="text-2xl">💣</span><span class="block text-[8px] mt-1">Mines</span></a>
+                <a href="dice.html"   class="glass-card p-3 text-center"><span class="text-2xl">🎲</span><span class="block text-[8px] mt-1">Dice</span></a>
+                <a href="plinko.html" class="glass-card p-3 text-center"><span class="text-2xl">🎰</span><span class="block text-[8px] mt-1">Plinko</span></a>
             </div>
         </div>
 
+        <!-- AD 4 — بعد الألعاب -->
+        <div class="ad-wrap" data-aos="fade-up">
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
+        </div>
+
         <!-- Leaderboard Preview -->
-        <div class="glass-card p-4 mb-6" data-aos="fade-up" data-aos-delay="500">
+        <div class="glass-card p-4 mb-4" data-aos="fade-up" data-aos-delay="240">
             <div class="flex justify-between items-center mb-3">
                 <h2 class="text-sm font-bold text-yellow-500">🏆 قادة اليوم</h2>
                 <a href="leaderboard.html" class="text-[10px] text-zinc-500">المزيد</a>
             </div>
             <div id="leaderboard-preview" class="space-y-2">
-                <div class="flex justify-between items-center text-xs text-zinc-400">
-                    <span>جاري التحميل...</span>
-                </div>
+                <div class="flex justify-between items-center text-xs text-zinc-400"><span>جاري التحميل...</span></div>
             </div>
+        </div>
+
+        <!-- AD 5 — نهاية الصفحة -->
+        <div class="ad-wrap" data-aos="fade-up">
+            <script>atOptions = {'key':'d5a96c0fea5c0cae8f6c7dee54b39841','format':'iframe','height':60,'width':468,'params':{}};</script>
+            <script src="https://www.highperformanceformat.com/d5a96c0fea5c0cae8f6c7dee54b39841/invoke.js"></script>
         </div>
 
     </div>
 
     <!-- Navigation Bar -->
     <nav>
-        <a href="index.html" class="nav-link active">🏠<br>الرئيسية</a>
-        <a href="games.html" class="nav-link">🎮<br>الألعاب</a>
-        <a href="hacks.html" class="nav-link">🚀<br>الهاكات</a>
+        <a href="index.html"       class="nav-link active">🏠<br>الرئيسية</a>
+        <a href="games.html"       class="nav-link">🎮<br>الألعاب</a>
+        <a href="hacks.html"       class="nav-link">🔗<br>اللينكات</a>
         <a href="leaderboard.html" class="nav-link">🏆<br>الترتيب</a>
-        <a href="settings.html" class="nav-link">⚙️<br>الإعدادات</a>
+        <a href="settings.html"    class="nav-link">⚙️<br>الإعدادات</a>
     </nav>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script type="module">
-        // ===== إزالة شاشة التحميل في أسرع وقت =====
-        function hideLoader() {
-            const ls = document.getElementById('loading-screen');
-            if(ls) { ls.style.opacity = '0'; ls.style.visibility = 'hidden'; }
-        }
-        // إزالة فورية بعد ثانية كحد أقصى مهما حدث
-        setTimeout(hideLoader, 1000);
-
-        // ===== AOS =====
         AOS.init({ duration: 800, once: true, offset: 50 });
 
-        // ===== Firebase =====
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { listenToUserBalance, removeLoadingScreen, getCurrentUserPhone, database } from './js/firebase-config.js';
+        import { ref, onValue, get, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        const db = getDatabase(initializeApp({
-            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
-            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
-        }));
+        removeLoadingScreen();
 
-        // ===== Auth =====
-        const phone = localStorage.getItem('zeykor_phone');
-        if(!phone) {
-            window.location.href = 'login.html';
-        } else {
-            // تحميل بيانات المستخدم
-            onValue(ref(db, `master_cheat/users/${phone}`), (snap) => {
-                hideLoader(); // إخفاء اللودر فور نجاح Firebase
-                const d = snap.val();
-                if(d) {
-                    document.getElementById('u-bal').innerText = d.balance || 0;
-                    document.getElementById('u-id').innerText = d.customID || `ID-${phone.slice(-4)}`;
-                    document.getElementById('u-level').innerText = `Level ${Math.floor((d.balance||0)/1000) + 1}`;
-                    document.getElementById('u-nick').innerText = d.nick || 'User';
-                } else {
-                    document.getElementById('u-id').innerText = 'مرحباً بك!';
-                }
-            }, (error) => {
-                // حتى لو Firebase فشل، ازل اللودر
-                hideLoader();
-                document.getElementById('u-id').innerText = 'تعذر الاتصال';
-            });
+        const phone = getCurrentUserPhone();
+        if (!phone) throw new Error("User not logged in");
 
-            // Leaderboard Preview
-            onValue(ref(db, 'master_cheat/users'), (snap) => {
-                const preview = document.getElementById('leaderboard-preview');
-                let users = [];
-                snap.forEach(u => { users.push({ ...u.val(), phone: u.key }); });
-                users.sort((a, b) => (b.balance||0) - (a.balance||0));
-                preview.innerHTML = users.slice(0, 3).map((u, i) => `
+        listenToUserBalance((balance, userData) => {
+            if (balance !== null) {
+                document.getElementById('u-bal').innerText = balance;
+                document.getElementById('u-id').innerText = userData.customID || `ID-${phone.slice(-4)}`;
+                document.getElementById('u-level').innerText = "Level " + (Math.floor(balance / 1000) + 1);
+                document.getElementById('u-nick').innerText = userData.nick || "User";
+            } else {
+                document.getElementById('u-id').innerText = "خطأ في التحميل";
+            }
+        });
+
+        onValue(ref(database, 'master_cheat/users'), (snap) => {
+            const preview = document.getElementById('leaderboard-preview');
+            let users = [];
+            snap.forEach(u => { let d = u.val(); d.phone = u.key; users.push(d); });
+            users.sort((a, b) => (b.balance || 0) - (a.balance || 0));
+            preview.innerHTML = "";
+            users.slice(0, 3).forEach((u, i) => {
+                const medals = ['🥇','🥈','🥉'];
+                preview.innerHTML += `
                     <div class="flex justify-between items-center text-xs">
                         <div class="flex items-center gap-2">
-                            <span class="text-red-600 font-black">#${i+1}</span>
+                            <span>${medals[i]}</span>
                             <span>${u.nick || 'User'}</span>
                         </div>
                         <span class="text-yellow-500">${u.balance || 0} 🪙</span>
-                    </div>
-                `).join('') || '<span class="text-zinc-500 text-xs">لا توجد بيانات</span>';
+                    </div>`;
             });
-        }
+        });
 
-        // ===== Reward Ad =====
-        window.showRewardAd = async () => {
-            const btn = event.currentTarget;
-            btn.style.opacity = '0.5';
-            btn.disabled = true;
-            window.open("ad_page.html", '_blank');
+        window.showRewardAd = async (e) => {
+            const btn = e.currentTarget;
+            btn.style.opacity = '0.5'; btn.disabled = true;
+            window.open("https://www.highperformanceformat.com/32bd0a6989d4de2e116826dfc2dc7749/invoke.js", '_blank');
             setTimeout(async () => {
                 try {
-                    const userRef = ref(db, `master_cheat/users/${phone}`);
+                    const userRef = ref(database, `master_cheat/users/${phone}`);
                     const snap = await get(userRef);
-                    if(snap.exists()) {
+                    if (snap.exists()) {
                         await update(userRef, { balance: (snap.val().balance || 0) + 50 });
                         alert("🎁 مبروك! تم إضافة 50 نقطة لرصيدك");
                     }
-                } catch(e) { alert("حدث خطأ، حاول مرة أخرى"); }
+                } catch(err) { alert("حدث خطأ، يرجى المحاولة لاحقاً"); }
                 finally { btn.style.opacity = '1'; btn.disabled = false; }
             }, 3000);
         };
 
-        // ===== Animated BG =====
+        // Animated Background
         const canvas = document.getElementById('bg-canvas');
-        if(canvas) {
+        if (canvas) {
             const ctx = canvas.getContext('2d');
-            function resizeCv() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            resizeCv(); window.addEventListener('resize', resizeCv);
-            const pts = Array.from({length: 40}, () => ({
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const pts = Array.from({length:30}, () => ({
                 x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-                vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4,
-                r: Math.random()*2+0.5
+                r: Math.random()*1.5+.5,
+                vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3,
+                a: Math.random()*.3+.1
             }));
-            (function animateBg() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            (function draw() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
                 pts.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-                    ctx.fillStyle = 'rgba(220,38,38,0.12)'; ctx.fill();
+                    p.x+=p.vx; p.y+=p.vy;
+                    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+                    if(p.y<0||p.y>canvas.height) p.vy*=-1;
+                    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                    ctx.fillStyle=`rgba(220,38,38,${p.a})`; ctx.fill();
                 });
-                requestAnimationFrame(animateBg);
+                requestAnimationFrame(draw);
             })();
         }
     </script>

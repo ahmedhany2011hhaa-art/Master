@@ -559,8 +559,8 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.2/dist/emoji-picker-element.min.js"></script>
     <script type="module">
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, onValue, push, serverTimestamp, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, push, serverTimestamp, set, update, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         // Firebase Config
         const db = getDatabase(initializeApp({
@@ -621,115 +621,3 @@
             messages.forEach((msg) => {
                 const isOwn = msg.id === myData.id;
      
-                const wrapper = document.createElement('div');
-                wrapper.className = 'message-wrapper';
-                wrapper.style.alignItems = isOwn ? 'flex-end' : 'flex-start';
-                const bubble = document.createElement('div');
-                bubble.className = 'message-bubble' + (isOwn ? ' own' : '');
-                if(!isOwn) {
-                    bubble.innerHTML = `<div class="message-sender">${msg.nick || 'User'}${msg.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}</div>`;
-                }
-                const textEl = document.createElement('div');
-                textEl.className = 'message-text';
-                textEl.textContent = msg.text || '';
-                const timeEl = document.createElement('div');
-                timeEl.className = 'message-time';
-                timeEl.textContent = msg.time ? new Date(msg.time).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}) : '';
-                bubble.appendChild(textEl);
-                bubble.appendChild(timeEl);
-                wrapper.appendChild(bubble);
-                chatMessages.appendChild(wrapper);
-            });
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
-
-        // Online counter
-        onValue(ref(db, 'ZEYKOR/online'), (snap) => {
-            let count = 0;
-            snap.forEach(u => { if(u.val().online) count++; });
-            document.getElementById('onlineCount').textContent = Math.max(count, 1);
-        });
-
-        // Send message
-        window.sendMessage = async () => {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if(!text || text.length > 500) return;
-            input.value = '';
-            try {
-                await push(ref(db, 'ZEYKOR/chat'), {
-                    nick: myData.nick,
-                    id: myData.id,
-                    text,
-                    isAdmin: myData.isAdmin,
-                    time: Date.now()
-                });
-            } catch(e) { console.error(e); }
-        };
-
-        document.getElementById('messageInput').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') sendMessage();
-        });
-
-        // Tab switching
-        window.switchTab = (tab) => {
-            currentTab = tab;
-            document.getElementById('chat-tab').style.display = tab === 'chat' ? 'flex' : 'none';
-            document.getElementById('rooms-tab').style.display = tab === 'rooms' ? 'flex' : 'none';
-            document.getElementById('tab-chat-btn').classList.toggle('active', tab === 'chat');
-            document.getElementById('tab-rooms-btn').classList.toggle('active', tab === 'rooms');
-            if(tab === 'rooms') loadRooms();
-        };
-
-        // Rooms
-        function loadRooms() {
-            const grid = document.getElementById('roomsGrid');
-            const sampleRooms = [
-                { name: 'الغرفة العامة', icon: '🌍', members: 42, type: 'public' },
-                { name: 'ترفيه وألعاب', icon: '🎮', members: 28, type: 'public' },
-                { name: 'VIP فقط', icon: '👑', members: 15, type: 'private' },
-                { name: 'نقاشات', icon: '💬', members: 33, type: 'public' },
-            ];
-            grid.innerHTML = '';
-            sampleRooms.forEach(room => {
-                grid.innerHTML += `
-                    <div class="room-card" onclick="joinRoom('${room.name}')">
-                        <span class="room-badge">${room.type === 'private' ? '🔒' : '🌐'}</span>
-                        <div class="room-icon">${room.icon}</div>
-                        <div class="room-name">${room.name}</div>
-                        <div class="room-members">${room.members} عضو</div>
-                    </div>`;
-            });
-        }
-
-        window.joinRoom = (name) => { alert('الانضمام إلى غرفة: ' + name); };
-        window.createRoom = () => { document.getElementById('createRoomModal').style.display = 'flex'; };
-        window.hideCreateRoomModal = () => { document.getElementById('createRoomModal').style.display = 'none'; };
-        window.createRoomConfirm = () => {
-            const name = document.getElementById('roomName').value.trim();
-            if(!name) return;
-            alert('تم إنشاء الغرفة: ' + name);
-            hideCreateRoomModal();
-        };
-
-        // Emoji picker
-        window.toggleEmojiPicker = () => {
-            const picker = document.getElementById('emojiPicker');
-            picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
-        };
-
-        document.addEventListener('emoji-click', (e) => {
-            document.getElementById('messageInput').value += e.detail?.unicode || '';
-            document.getElementById('emojiPicker').style.display = 'none';
-        });
-
-        // Hide loading screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const ls = document.getElementById('loading-screen');
-                if(ls) { ls.style.opacity = '0'; ls.style.visibility = 'hidden'; }
-            }, 600);
-        });
-    </script>
-</body>
-</html>
