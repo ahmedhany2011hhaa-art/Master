@@ -492,6 +492,28 @@
     </style>
 </head>
 <body>
+    <!-- IP Ban Check -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        const _db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+        // Get user IP via public API then check ban
+        (async () => {
+            try {
+                const res  = await fetch('https://api.ipify.org?format=json');
+                const { ip } = await res.json();
+                const key  = ip.replace(/\./g, '_');
+                const snap = await get(ref(_db, `master_cheat/bans/ips/${key}`));
+                if (snap.exists()) {
+                    document.body.innerHTML = `<div style="min-height:100vh;background:#030303;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Cairo,sans-serif"><div style="background:linear-gradient(145deg,rgba(220,38,38,0.1),rgba(10,10,10,0.95));border:1px solid rgba(220,38,38,0.3);border-radius:2rem;padding:2rem;max-width:380px;width:100%;text-align:center"><div style="font-size:4rem;margin-bottom:1rem">🌐</div><h2 style="color:#dc2626;font-weight:900;font-size:1.5rem;margin-bottom:.5rem">تم حظر جهازك</h2><p style="color:#666;font-size:.85rem">تم حظر عنوان IP الخاص بك من الوصول لهذا الموقع</p></div></div>`;
+                }
+            } catch(e) {}
+        })();
+    </script>
+
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loader"></div>

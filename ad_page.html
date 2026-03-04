@@ -1,10 +1,251 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Master X Ad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MASTER X | شاهد واكسب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            background: #030303;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* background particles */
+        #bg { position: fixed; top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.4;pointer-events:none; }
+
+        .wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* top logo */
+        .brand {
+            text-align: center;
+        }
+        .brand h1 { font-size: 1.6rem; font-weight: 900; }
+        .brand h1 span { color: #dc2626; }
+        .brand p { font-size: 0.75rem; color: #555; margin-top: 2px; }
+
+        /* reward info */
+        .reward-card {
+            background: linear-gradient(145deg, rgba(220,38,38,0.12), rgba(10,10,10,0.95));
+            border: 1px solid rgba(220,38,38,0.25);
+            border-radius: 1.5rem;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .reward-card::before {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 100px; height: 100px;
+            background: radial-gradient(circle, rgba(220,38,38,0.2), transparent 70%);
+            border-radius: 50%;
+        }
+        .coin-icon {
+            font-size: 3.5rem;
+            display: block;
+            margin-bottom: 8px;
+            animation: bounce 1.5s ease-in-out infinite;
+        }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .reward-amount {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fbbf24;
+        }
+        .reward-label { font-size: 0.85rem; color: #888; margin-top: 4px; }
+
+        /* timer bar */
+        .timer-wrap {
+            width: 100%;
+        }
+        .timer-bar-bg {
+            background: rgba(255,255,255,0.06);
+            border-radius: 2rem;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .timer-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #f97316);
+            border-radius: 2rem;
+            transition: width 1s linear;
+            width: 100%;
+        }
+        .timer-text {
+            font-size: 0.78rem;
+            color: #555;
+            text-align: center;
+        }
+        .timer-text span { color: #fbbf24; font-weight: 900; }
+
+        /* ad box */
+        .ad-box {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .ad-box::before {
+            content: 'إعلان';
+            position: absolute;
+            top: 5px; right: 10px;
+            font-size: 8px;
+            color: #333;
+        }
+
+        /* close button */
+        .close-btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            padding: 14px 20px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+        }
+        .close-btn.visible { display: block; animation: popIn 0.3s ease; }
+        @keyframes popIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+        .close-btn:active { transform: scale(0.98); }
+
+        .waiting-text {
+            font-size: 0.78rem;
+            color: #444;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <script src="https://pl28815852.effectivegatecpm.com/ea/a4/1d/eaa41deda9f49ea64b024749655dabf5.js"></script>
+    <canvas id="bg"></canvas>
+
+    <div class="wrapper">
+        <div class="brand">
+            <h1><span>MASTER</span> X</h1>
+            <p>شاهد الإعلان واكسب مكافأتك 🎁</p>
+        </div>
+
+        <div class="reward-card">
+            <span class="coin-icon">🪙</span>
+            <div class="reward-amount" id="reward-val">+50</div>
+            <div class="reward-label">نقطة ستُضاف لرصيدك</div>
+        </div>
+
+        <div class="timer-wrap">
+            <div class="timer-bar-bg"><div class="timer-bar-fill" id="t-bar"></div></div>
+            <p class="timer-text">ستحصل على مكافأتك بعد <span id="t-sec">15</span> ثانية</p>
+        </div>
+
+        <div class="ad-box">
+            <script src="https://pl28815852.effectivegatecpm.com/ea/a4/1d/eaa41deda9f49ea64b024749655dabf5.js"></script>
+        </div>
+
+        <p class="waiting-text" id="w-text">📺 شاهد الإعلان حتى النهاية للحصول على المكافأة</p>
+        <button class="close-btn" id="close-btn" onclick="claimReward()">🎁 استلم مكافأتك!</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+        const db = getDatabase(initializeApp({
+            apiKey: "AIzaSyCd6mOpEJyiUSAAhmm2NbhT80MMY0UQJcc",
+            databaseURL: "https://project-fe025bb5-b1cc-4b8f-93e-default-rtdb.firebaseio.com"
+        }));
+
+        const phone = localStorage.getItem('zeykor_phone');
+
+        // Timer countdown
+        const SECONDS = 15;
+        let remaining = SECONDS;
+        const bar  = document.getElementById('t-bar');
+        const sec  = document.getElementById('t-sec');
+        const btn  = document.getElementById('close-btn');
+        const wtxt = document.getElementById('w-text');
+
+        const iv = setInterval(() => {
+            remaining--;
+            const pct = (remaining / SECONDS) * 100;
+            bar.style.width = pct + '%';
+            sec.textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(iv);
+                btn.classList.add('visible');
+                wtxt.textContent = '✅ يمكنك الآن استلام مكافأتك!';
+                sec.textContent = '0';
+            }
+        }, 1000);
+
+        window.claimReward = async () => {
+            if (!phone) { alert('يجب تسجيل الدخول أولاً'); window.location.href = 'login.html'; return; }
+            btn.disabled = true; btn.textContent = '⏳ جاري الإضافة...';
+            try {
+                const snap = await get(ref(db, `master_cheat/users/${phone}`));
+                if (snap.exists()) {
+                    const cur = snap.val().balance || 0;
+                    await update(ref(db, `master_cheat/users/${phone}`), { balance: cur + 50 });
+                    btn.textContent = '✅ تم! +50 🪙';
+                    setTimeout(() => {
+                        window.history.back();
+                    }, 1500);
+                }
+            } catch(e) {
+                btn.disabled = false;
+                btn.textContent = '❌ خطأ — حاول مجدداً';
+            }
+        };
+
+        // Background animation
+        const canvas = document.getElementById('bg');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const pts = Array.from({length:20}, () => ({
+            x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+            r: Math.random()*1.2+.4, vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25, a: Math.random()*.3+.1
+        }));
+        (function anim() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            pts.forEach(p => {
+                p.x+=p.vx; p.y+=p.vy;
+                if(p.x<0||p.x>canvas.width) p.vx*=-1;
+                if(p.y<0||p.y>canvas.height) p.vy*=-1;
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+                ctx.fillStyle=`rgba(220,38,38,${p.a})`; ctx.fill();
+            });
+            requestAnimationFrame(anim);
+        })();
+    </script>
 </body>
 </html>
